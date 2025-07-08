@@ -1,7 +1,3 @@
-node_modules/
-build/
-dist/
-.env
-
-config/*
-!config/default.yml
+config.toml
+scrapbook
+out

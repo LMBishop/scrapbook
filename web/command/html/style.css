@@ -1,0 +1,165 @@
+html, body {
+    font-family: sans-serif;
+
+}
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+    border: black 1px solid;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+a, input[type=submit] {
+    /* font-weight: bold; */
+    border: 1px solid #000!important;
+    color: #000;
+    /* border: 2px solid #0074D9!important;
+    color: #0074D9; */
+    padding: 3px 6px!important;
+    text-decoration: none;
+}
+
+a :visited{
+    color: #fff;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;;
+}
+
+legend {
+    background-color: #000;
+    color: #fff;
+    padding: 3px 6px;
+    font-style: italic;
+}
+
+label {
+    font-weight: bold;
+}
+
+footer {
+    margin-top: 2rem;
+    color: gray;
+    font-size: smaller;
+}
+
+button, input[type=submit] {
+    background: none!important;
+    font-family: arial, sans-serif;
+    font-size: medium;
+    cursor: pointer;
+}
+
+a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[type=submit]:active {
+    background: #000!important;
+    color: #fff!important;
+}
+
+.form-help {
+    font-size: smaller;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.control-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+}
+
+.control-group.group-right {
+    justify-content: flex-end;
+}
+
+.control-group a, .control-group button, .control-group input[type=submit] {
+    text-decoration: none;
+    width: initial;
+}
+
+.sites-table {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 50% 1fr 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.sites-table > .header, .versions-table > .header {
+    font-weight: bold;
+}
+
+.sites-table > .name {
+    display: flex;
+    flex-direction: column;
+}
+
+.sites-table > .name > span:nth-child(2) {
+    font-size: smaller;
+}
+
+.sites-table > .actions, .versions-table > .actions {
+    justify-self: flex-end;
+}
+
+.versions-table {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.versions-table > .span {
+    grid-column: 1 / span 2;
+}
+
+.versions-table > .date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.versions-table > .date > .current {
+    color: #2ECC40;
+    font-size: smaller;
+    font-style: italic;
+}
+
+.alert {
+    background-color: #f2f2f2;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e7e7e7; 
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.alert.success {
+    background-color: #aaffaa;
+    border: 1px solid #90ee90;
+}
+
+.alert.error {
+    background-color: #ffcccb;
+    border: 1px solid #ff6666;
+}

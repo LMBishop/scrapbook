@@ -1,5 +1,0 @@
-port: 3000
-
-sites:
-  home:
-    path: /srv/www/home

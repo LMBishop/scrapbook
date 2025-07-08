@@ -1,3 +1,6 @@
+todo: rewrite
+
+
 # scrapbook
 A web service which accepts zipped websites and deploys them somewhere (i.e.
 unzips them and shoves them into another directory).
