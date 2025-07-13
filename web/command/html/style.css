@@ -49,8 +49,12 @@ legend {
     font-style: italic;
 }
 
-label {
+label:not(input[type=checkbox]+label) {
     font-weight: bold;
+}
+
+input[type=checkbox] {
+    margin: 0 0.25rem 0 0;
 }
 
 footer {
@@ -61,7 +65,7 @@ footer {
 
 button, input[type=submit] {
     background: none!important;
-    font-family: arial, sans-serif;
+    font-family: sans-serif;
     font-size: medium;
     cursor: pointer;
 }
@@ -98,7 +102,7 @@ a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[
 .sites-table {
     width: 100%;
     display: grid;
-    grid-template-columns: 50% 1fr 1fr;
+    grid-template-columns: 40% 1fr 1fr 1fr;
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
@@ -111,6 +115,10 @@ a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[
 .sites-table > .name {
     display: flex;
     flex-direction: column;
+}
+
+.sites-table > .flags:not(.header) {
+    font-family: monospace;
 }
 
 .sites-table > .name > span:nth-child(2) {

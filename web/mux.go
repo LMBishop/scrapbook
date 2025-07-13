@@ -16,6 +16,8 @@ func NewMux(cfg *config.MainConfig, siteIndex *index.SiteIndex) *http.ServeMux {
 	mux.HandleFunc("GET /site/{site}/", handler.GetSite(cfg, siteIndex))
 	mux.HandleFunc("GET /site/{site}/upload", handler.GetUpload(siteIndex))
 	mux.HandleFunc("POST /site/{site}/upload", handler.PostUpload(cfg, siteIndex))
+	mux.HandleFunc("GET /site/{site}/flags", handler.GetFlags(siteIndex))
+	mux.HandleFunc("POST /site/{site}/flags", handler.PostFlags(cfg, siteIndex))
 
 	return mux
 }

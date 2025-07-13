@@ -25,7 +25,7 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 				Class("control-group"),
 
 				navButton("Upload new version", "upload"),
-				navButton("Disable site", "disable"),
+				navButton("Set flags", "flags"),
 				navButton("Delete site", "delete"),
 			),
 		),
@@ -65,8 +65,11 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 			),
 		}),
 
-		H2(Text("API endpoints")),
-		P(Code(Text(fmt.Sprintf("http://%s/api/site/%s/upload", mainConfig.Command.Host, site.Name)))),
+		H2(Text("Information")),
+
+		P(Text("API endpoint for new versions: "), Code(Text(fmt.Sprintf("POST https://%s/api/site/%s/upload", mainConfig.Command.Host, site.Name)))),
+
+		P(Text("Data directory on system: "), Code(Text(site.Path))),
 
 		navButton("Go back", "/"),
 	)

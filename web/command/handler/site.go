@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/LMBishop/scrapbook/pkg/config"
@@ -15,11 +14,11 @@ func GetSite(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.Re
 	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 		siteName := r.PathValue("site")
 		if siteName == "" {
-			return nil, fmt.Errorf("unknown site")
+			return html.ErrorPage("Unknown site: " + siteName), nil
 		}
 		site := index.GetSite(siteName)
 		if site == nil {
-			return nil, fmt.Errorf("unknown site")
+			return html.ErrorPage("Unknown site: " + siteName), nil
 		}
 
 		return html.SitePage(mainConfig, site), nil

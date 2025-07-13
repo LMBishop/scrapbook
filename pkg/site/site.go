@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/LMBishop/scrapbook/pkg/config"
@@ -136,6 +137,9 @@ func (s *Site) EvaluateSiteStatus() string {
 	if err != nil || !stat.IsDir() {
 		return "inactive"
 	}
+	if s.SiteConfig.Flags&config.FlagDisable != 0 {
+		return "inactive"
+	}
 
 	return "live"
 }
@@ -145,6 +149,24 @@ func (s *Site) EvaluateSiteStatusReason() string {
 	if err != nil || !stat.IsDir() {
 		return "This site is inacessible because no version is active"
 	}
+	if s.SiteConfig.Flags&config.FlagDisable != 0 {
+		return "This site is inacessible because it is disabled"
+	}
 
 	return "This site is live"
+}
+
+func (s *Site) ConvertFlagsToString() string {
+	var bits []string
+	bitNames := []string{"D", "T", "I", "P", "R"}
+
+	for i := 0; i < len(bitNames); i++ {
+		if s.SiteConfig.Flags&(1<<i) != 0 {
+			bits = append(bits, bitNames[i])
+		} else {
+			bits = append(bits, "-")
+		}
+	}
+
+	return strings.Join(bits, "")
 }

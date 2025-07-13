@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/index"
 )
 
@@ -17,6 +18,10 @@ func HandleUpload(siteName string, reader *multipart.Reader, index *index.SiteIn
 	s := index.GetSite(siteName)
 	if s == nil {
 		return "", fmt.Errorf("no such site: %s", siteName)
+	}
+
+	if s.SiteConfig.Flags&config.FlagReadOnly != 0 {
+		return "", fmt.Errorf("site is read only: %s", siteName)
 	}
 
 	temp, err := os.CreateTemp(os.TempDir(), "scrapbook")

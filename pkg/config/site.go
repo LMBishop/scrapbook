@@ -6,8 +6,20 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
+type SiteFlag uint
+
+const (
+	FlagDisable SiteFlag = 1 << iota
+	FlagTLS
+	FlagIndex
+	FlagPassword
+	FlagReadOnly
+)
+
 type SiteConfig struct {
 	Host string
+
+	Flags SiteFlag
 }
 
 func ReadSiteConfig(filePath string, dst *SiteConfig) error {

@@ -25,6 +25,10 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 					Text("Status"),
 				),
 				Span(
+					Class("header flags"),
+					Text("Flags"),
+				),
+				Span(
 					Class("header actions"),
 					Text("Actions"),
 				),
@@ -39,6 +43,10 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 					Span(
 						Class("status"),
 						Text(site.EvaluateSiteStatus()),
+					),
+					Span(
+						Class("flags"),
+						Text(site.ConvertFlagsToString()),
 					),
 					Span(
 						Class("actions"),
