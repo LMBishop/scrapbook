@@ -126,6 +126,8 @@ a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[
 }
 
 .sites-table > .actions, .versions-table > .actions {
+    display: flex;
+    gap: 0.5rem;
     justify-self: flex-end;
 }
 
@@ -149,7 +151,7 @@ a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[
 }
 
 .versions-table > .date > .current {
-    color: #2ECC40;
+    color: #0dbe22;
     font-size: smaller;
     font-style: italic;
 }
@@ -170,4 +172,12 @@ a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[
 .alert.error {
     background-color: #ffcccb;
     border: 1px solid #ff6666;
+}
+
+.text-good {
+    color: #0dbe22;
+}
+
+.text-bad {
+    color: #c02020;
 }

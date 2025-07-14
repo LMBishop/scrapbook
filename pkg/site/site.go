@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -92,6 +93,10 @@ func (s *Site) UpdateVersion(newVersion string) error {
 	return os.Symlink(newVersion, currentVersionPath)
 }
 
+func (s *Site) DeleteDataOnDisk() error {
+	return os.RemoveAll(s.Path)
+}
+
 func (s *Site) GetAllVersions() ([]string, error) {
 	entries, err := os.ReadDir(s.Path)
 
@@ -115,6 +120,9 @@ func (s *Site) GetAllVersions() ([]string, error) {
 			versions = append(versions, entry.Name())
 		}
 	}
+
+	slices.Sort(versions)
+	slices.Reverse(versions)
 
 	return versions, err
 }

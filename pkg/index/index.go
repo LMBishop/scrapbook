@@ -55,6 +55,14 @@ func (s *SiteIndex) AddSite(site *site.Site) {
 	s.updateSiteIndexes()
 }
 
+func (s *SiteIndex) RemoveSite(name string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	delete(s.sites, name)
+	s.updateSiteIndexes()
+}
+
 func (s *SiteIndex) UpdateSiteIndexes() {
 	s.mu.Lock()
 	defer s.mu.Unlock()

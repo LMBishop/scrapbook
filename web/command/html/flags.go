@@ -52,6 +52,7 @@ func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node
 							ID("tls"),
 							Name("tls"),
 							Type("checkbox"),
+							Disabled(),
 							If(flags&config.FlagTLS != 0, Checked()),
 						),
 						Label(
@@ -69,6 +70,7 @@ func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node
 							ID("index"),
 							Name("index"),
 							Type("checkbox"),
+							Disabled(),
 							If(flags&config.FlagIndex != 0, Checked()),
 						),
 						Label(
@@ -86,6 +88,7 @@ func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node
 							ID("password"),
 							Name("password"),
 							Type("checkbox"),
+							Disabled(),
 							If(flags&config.FlagPassword != 0, Checked()),
 						),
 						Label(

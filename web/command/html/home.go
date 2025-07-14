@@ -33,7 +33,13 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 					Text("Actions"),
 				),
 			},
+
 			Map(siteIndex.GetSites(), func(site *site.Site) Node {
+				status := site.EvaluateSiteStatus()
+				good := false
+				if status == "live" {
+					good = true
+				}
 				return Group{
 					Span(
 						Class("name"),
@@ -42,8 +48,9 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 						If(site.SiteConfig.Host != "", Span(Text(fmt.Sprintf("on %s", site.SiteConfig.Host)))),
 					),
 					Span(
-						Class("status"),
-						Text(site.EvaluateSiteStatus()),
+						If(good, Class("status text-good")),
+						If(!good, Class("status text-bad")),
+						Text(status),
 					),
 					Span(
 						Class("flags"),
@@ -57,6 +64,12 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 			}),
 		),
 
-		navButton("Create new", "/create"),
+		If(len(siteIndex.GetSites()) == 0, alert("There are no sites to display", "")),
+
+		Div(
+			Class("control-group group-right"),
+
+			navButton("Create new", "/create"),
+		),
 	)
 }

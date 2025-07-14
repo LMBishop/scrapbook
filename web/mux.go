@@ -25,6 +25,8 @@ func NewMux(cfg *config.MainConfig, siteIndex *index.SiteIndex, authenticator *a
 	mux.HandleFunc("POST /site/{site}/flags", middleware.MustAuthenticate(authenticator, handler.PostFlags(cfg, siteIndex)))
 	mux.HandleFunc("GET /site/{site}/host", middleware.MustAuthenticate(authenticator, handler.GetHost(siteIndex)))
 	mux.HandleFunc("POST /site/{site}/host", middleware.MustAuthenticate(authenticator, handler.PostHost(cfg, siteIndex)))
+	mux.HandleFunc("GET /site/{site}/delete", middleware.MustAuthenticate(authenticator, handler.GetDelete(siteIndex)))
+	mux.HandleFunc("POST /site/{site}/delete", middleware.MustAuthenticate(authenticator, handler.PostDelete(cfg, siteIndex)))
 
 	return mux
 }
