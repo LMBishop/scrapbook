@@ -38,7 +38,8 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 					Span(
 						Class("name"),
 						Span(Text(site.Name)),
-						Span(Text(fmt.Sprintf("on %s", site.SiteConfig.Host))),
+						If(site.SiteConfig.Host == "", Span(Text("no host"))),
+						If(site.SiteConfig.Host != "", Span(Text(fmt.Sprintf("on %s", site.SiteConfig.Host)))),
 					),
 					Span(
 						Class("status"),

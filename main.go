@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/LMBishop/scrapbook/api"
+	"github.com/LMBishop/scrapbook/pkg/auth"
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/constants"
 	"github.com/LMBishop/scrapbook/pkg/index"
@@ -41,10 +43,19 @@ func main() {
 		slog.Warn("command interface host is empty - neither api or web interface will be accessible")
 	}
 
+	if cfg.Command.Secret == "" {
+		slog.Warn("command interface secret is empty - neither api or web interface will be accessible")
+	}
+
+	secretKey := make([]byte, 32)
+	rand.Read(secretKey)
+
+	authenticator := auth.NewAuthenticator(secretKey)
+
 	mux := http.NewServeMux()
 
 	mux.Handle(fmt.Sprintf("%s/api/", cfg.Command.Host), http.StripPrefix("/api/", api.NewMux(&cfg, siteIndex)))
-	mux.Handle(fmt.Sprintf("%s/", cfg.Command.Host), web.NewMux(&cfg, siteIndex))
+	mux.Handle(fmt.Sprintf("%s/", cfg.Command.Host), web.NewMux(&cfg, siteIndex, authenticator))
 	mux.HandleFunc("/", server.ServeSite(siteIndex))
 
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Listen.Address, cfg.Listen.Port), mux)

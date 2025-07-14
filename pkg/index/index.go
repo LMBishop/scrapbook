@@ -55,9 +55,18 @@ func (s *SiteIndex) AddSite(site *site.Site) {
 	s.updateSiteIndexes()
 }
 
+func (s *SiteIndex) UpdateSiteIndexes() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.updateSiteIndexes()
+}
+
 func (s *SiteIndex) updateSiteIndexes() {
 	clear(s.sitesByHost)
 	for _, site := range s.sites {
-		s.sitesByHost[site.SiteConfig.Host] = site
+		if site.SiteConfig.Host != "" {
+			s.sitesByHost[site.SiteConfig.Host] = site
+		}
 	}
 }

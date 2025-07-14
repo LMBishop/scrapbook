@@ -133,6 +133,9 @@ func (s *Site) CreateNewVersion() (string, error) {
 }
 
 func (s *Site) EvaluateSiteStatus() string {
+	if s.SiteConfig.Host == "" {
+		return "inactive"
+	}
 	stat, err := os.Stat(s.GetCurrentPath())
 	if err != nil || !stat.IsDir() {
 		return "inactive"
@@ -145,6 +148,9 @@ func (s *Site) EvaluateSiteStatus() string {
 }
 
 func (s *Site) EvaluateSiteStatusReason() string {
+	if s.SiteConfig.Host == "" {
+		return "This site is not served by scrapbook"
+	}
 	stat, err := os.Stat(s.GetCurrentPath())
 	if err != nil || !stat.IsDir() {
 		return "This site is inacessible because no version is active"

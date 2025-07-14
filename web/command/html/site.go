@@ -26,6 +26,7 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 
 				navButton("Upload new version", "upload"),
 				navButton("Set flags", "flags"),
+				navButton("Change host", "host"),
 				navButton("Delete site", "delete"),
 			),
 		),

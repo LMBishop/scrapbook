@@ -56,7 +56,7 @@ func CreatePage(success, err string, formValues CreatePageForm) Node {
 					),
 					Span(
 						Class("form-help"),
-						Text("The fully qualified domain name for which this site is to be served on."),
+						Text("The fully qualified domain name for which this site is to be served on. If this site is not to be served by scrapbook, leave blank."),
 					),
 				),
 

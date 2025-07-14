@@ -36,10 +36,6 @@ func PostCreate(mainConfig *config.MainConfig, index *index.SiteIndex) func(http
 			return html.CreatePage("", "A name must be specified", formValues), nil
 		}
 
-		if host == "" {
-			return html.CreatePage("", "A host must be specified", formValues), nil
-		}
-
 		site, err := site.CreateNewSite(name, path.Join(constants.SysDataDir, "sites"), host)
 
 		if err != nil {
