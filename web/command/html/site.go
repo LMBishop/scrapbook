@@ -63,12 +63,12 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 					}
 				}),
 			),
-			Div(
-				Class("control-group group-right"),
-
-				navButton("Upload new version", "upload"),
-			),
 		}),
+		Div(
+			Class("control-group group-right"),
+
+			navButton("Upload new version", "upload"),
+		),
 
 		H2(Text("Information")),
 

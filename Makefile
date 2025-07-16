@@ -1,6 +1,7 @@
 BINARY_NAME=scrapbook
 SYS_CONF_DIR=/etc/scrapbook
-SYS_CONF_DIR=/var/lib/scrapbook
+SYS_DATA_DIR=/var/lib/scrapbook
+SYSTEMD_DIR=/etc/systemd/system
 
 all: build
 
@@ -9,9 +10,19 @@ build:
 
 runlocal:
 	PWD=$(shell pwd)
-	mkdir -p out
-	go build -ldflags "-X 'github.com/LMBishop/scrapbook/pkg/constants.SysConfDir=${PWD}/out/config' -X 'github.com/LMBishop/scrapbook/pkg/constants.SysDataDir=${PWD}/out/data'" -o out/${BINARY_NAME} main.go
-	cd out; ./${BINARY_NAME}
+	mkdir -p runlocal
+	go build -ldflags "-X 'github.com/LMBishop/scrapbook/pkg/constants.SysConfDir=${PWD}/runlocal/config' -X 'github.com/LMBishop/scrapbook/pkg/constants.SysDataDir=${PWD}/runlocal/data'" -o runlocal/${BINARY_NAME} main.go
+	cd runlocal; ./${BINARY_NAME}
+
+install: build
+	install -Dm755 ${BINARY_NAME} /usr/local/bin/${BINARY_NAME}
+
+installconf:
+	install -Dm755 dist/scrapbook.service ${SYSTEMD_DIR}/
+	install -Dm755 dist/config.toml ${SYS_CONF_DIR}/config.toml
+	if ! getent passwd scrapbook > /dev/null; then \
+		useradd --system --create-home --shell /usr/sbin/nologin --home-dir ${SYS_DATA_DIR} scrapbook ;\
+	fi
 
 clean:
 	go clean

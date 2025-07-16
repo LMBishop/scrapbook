@@ -1,0 +1,11 @@
+[Unit]
+Description=scrapbook server
+
+[Service]
+User=scrapbook
+Group=scrapbook
+Restart=always
+ExecStart=/usr/local/bin/scrapbook
+
+[Install]
+WantedBy=multi-user.target

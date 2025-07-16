@@ -1,0 +1,13 @@
+[Listen]
+Address = '0.0.0.0'
+Port = 80
+
+[Command]
+Host = ''
+Secret = ''
+
+[[API]]
+Enable = true
+
+[[Web]]
+Enable = true
