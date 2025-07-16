@@ -24,6 +24,7 @@ func AuthenticatePage(err string) Node {
 				Input(
 					ID("token"),
 					Name("token"),
+					Type("password"),
 				),
 				Span(
 					Class("form-help"),
