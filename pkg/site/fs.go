@@ -3,6 +3,7 @@ package site
 import (
 	"net/http"
 	"path/filepath"
+	"strings"
 )
 
 type siteFS struct {
@@ -12,7 +13,15 @@ type siteFS struct {
 func (sfs siteFS) Open(path string) (http.File, error) {
 	f, err := sfs.fs.Open(path)
 	if err != nil {
-		return nil, err
+		if strings.HasSuffix(path, ".html") {
+			return nil, err
+		}
+
+		htmlPath := path + ".html"
+		f, err = sfs.fs.Open(htmlPath)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	s, err := f.Stat()
