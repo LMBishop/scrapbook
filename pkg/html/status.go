@@ -23,3 +23,11 @@ func NotFoundSitePage(host string) Node {
 		P(Text(fmt.Sprintf("The site %s is unknown", host))),
 	)
 }
+
+func ForbiddenDisabledPage(host string) Node {
+	return Page("Forbidden",
+		H1(Text("Forbidden")),
+
+		P(Text(fmt.Sprintf("Site %s is disabled", host))),
+	)
+}

@@ -21,6 +21,11 @@ func NewSiteFileServer(root http.FileSystem, siteConfig *config.SiteConfig) *Sit
 }
 
 func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if fs.siteConfig.Flags&config.FlagDisable != 0 {
+		html.ForbiddenDisabledPage(fs.siteConfig.Host).Render(w)
+		return
+	}
+
 	path := filepath.Clean(r.URL.Path)
 
 	file, err := fs.root.Open(path)
