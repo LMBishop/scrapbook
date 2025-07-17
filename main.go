@@ -53,7 +53,7 @@ func main() {
 	if cfg.Command.Host == "" {
 		slog.Warn("command interface host is empty - neither api or web interface will be accessible")
 	} else {
-		mux.Handle(fmt.Sprintf("%s/api/", cfg.Command.Host), http.StripPrefix("/api/", api.NewMux(&cfg, siteIndex)))
+		mux.Handle(fmt.Sprintf("%s/api/", cfg.Command.Host), http.StripPrefix("/api", api.NewMux(&cfg, siteIndex)))
 		mux.Handle(fmt.Sprintf("%s/", cfg.Command.Host), web.NewMux(&cfg, siteIndex, authenticator))
 	}
 	mux.HandleFunc("/", server.ServeSite(siteIndex))
