@@ -22,6 +22,7 @@ func NewSiteFileServer(root http.FileSystem, siteConfig *config.SiteConfig) *Sit
 
 func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if fs.siteConfig.Flags&config.FlagDisable != 0 {
+		w.WriteHeader(http.StatusForbidden)
 		html.ForbiddenDisabledPage(fs.siteConfig.Host).Render(w)
 		return
 	}
@@ -31,6 +32,7 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	file, err := fs.root.Open(path)
 	if err != nil {
 		if strings.HasSuffix(path, ".html") {
+			w.WriteHeader(http.StatusNotFound)
 			html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
 			return
 		}
@@ -38,6 +40,7 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		htmlPath := path + ".html"
 		file, err = fs.root.Open(htmlPath)
 		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
 			html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
 			return
 		}
@@ -46,6 +49,7 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	info, err := file.Stat()
 	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
 		html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
 		return
 	}
@@ -54,6 +58,7 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		indexPath := filepath.Join(path, "index.html")
 		if _, err := fs.root.Open(indexPath); os.IsNotExist(err) {
 			if fs.siteConfig.Flags&config.FlagIndex == 0 {
+				w.WriteHeader(http.StatusNotFound)
 				html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
 				return
 			}
