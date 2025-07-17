@@ -29,38 +29,31 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	path := filepath.Clean(r.URL.Path)
 
+	var info os.FileInfo
 	file, err := fs.root.Open(path)
 	if err != nil {
 		if strings.HasSuffix(path, ".html") {
-			w.WriteHeader(http.StatusNotFound)
-			html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
-			return
+			goto notFound
 		}
 
 		htmlPath := path + ".html"
 		file, err = fs.root.Open(htmlPath)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
-			return
+			goto notFound
 		}
 	}
 	defer file.Close()
 
-	info, err := file.Stat()
+	info, err = file.Stat()
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
-		return
+		goto notFound
 	}
 
 	if info.IsDir() {
 		indexPath := filepath.Join(path, "index.html")
-		if _, err := fs.root.Open(indexPath); os.IsNotExist(err) {
+		if file, err = fs.root.Open(indexPath); os.IsNotExist(err) {
 			if fs.siteConfig.Flags&config.FlagIndex == 0 {
-				w.WriteHeader(http.StatusNotFound)
-				html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
-				return
+				goto notFound
 			}
 			files, err := fs.listFiles(path)
 			if path != "/" {
@@ -74,10 +67,19 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		http.ServeFile(w, r, indexPath)
-	} else {
-		http.ServeFile(w, r, path)
+
+		info, err = file.Stat()
+		if err != nil {
+			goto notFound
+		}
 	}
+
+	http.ServeContent(w, r, info.Name(), info.ModTime(), file)
+	return
+
+notFound:
+	w.WriteHeader(http.StatusNotFound)
+	html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
 }
 
 func (fs *SiteFileServer) listFiles(dir string) ([]html.File, error) {
