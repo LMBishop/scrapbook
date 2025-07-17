@@ -12,7 +12,7 @@ func ServeSite(siteIndex *index.SiteIndex) func(w http.ResponseWriter, r *http.R
 		site := siteIndex.GetSiteByHost(r.Host)
 		if site == nil {
 			w.WriteHeader(http.StatusNotFound)
-			html.NotFoundSitePage(r.Host)
+			html.NotFoundSitePage(r.Host).Render(w)
 			return
 		}
 
