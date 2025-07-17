@@ -14,10 +14,11 @@ import (
 
 func UploadSiteVersion(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		token := strings.TrimPrefix("Bearer ", r.Header.Get("Authorization"))
+		token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 
 		if len(mainConfig.Command.Secret) == 0 || subtle.ConstantTimeCompare([]byte(token), []byte(mainConfig.Command.Secret)) != 1 {
 			w.WriteHeader(http.StatusForbidden)
+			fmt.Fprint(w, "forbidden")
 			return
 		}
 
