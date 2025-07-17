@@ -50,6 +50,10 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if info.IsDir() {
+		if !strings.HasSuffix(path, "/") {
+			http.Redirect(w, r, path+"/", http.StatusTemporaryRedirect)
+			return
+		}
 		indexPath := filepath.Join(path, "index.html")
 		if file, err = fs.root.Open(indexPath); os.IsNotExist(err) {
 			if fs.siteConfig.Flags&config.FlagIndex == 0 {
