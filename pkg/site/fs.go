@@ -50,8 +50,8 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if info.IsDir() {
-		if !strings.HasSuffix(path, "/") {
-			http.Redirect(w, r, path+"/", http.StatusTemporaryRedirect)
+		if !strings.HasSuffix(r.URL.Path, "/") {
+			http.Redirect(w, r, path+"/", http.StatusFound)
 			return
 		}
 		indexPath := filepath.Join(path, "index.html")
