@@ -11,6 +11,7 @@ import (
 func NewMux(cfg *config.MainConfig, siteIndex *index.SiteIndex) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /site/{site}/upload", handler.UploadSiteVersion(cfg, siteIndex))
+	mux.HandleFunc("/", http.NotFoundHandler().ServeHTTP)
 
 	return mux
 }

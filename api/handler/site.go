@@ -40,6 +40,8 @@ func UploadSiteVersion(mainConfig *config.MainConfig, index *index.SiteIndex) fu
 		}
 
 		slog.Info("new version created", "site", site, "version", version, "remoteAddr", r.RemoteAddr)
+
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, "version created: %s", version)
 	}
 }
