@@ -1,4 +1,4 @@
-package html
+package skeleton
 
 import (
 	_ "embed"
@@ -11,7 +11,7 @@ import (
 //go:embed style.css
 var styles string
 
-func page(title string, children ...Node) Node {
+func Page(title string, children ...Node) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "en",
@@ -34,24 +34,25 @@ func footer() Node {
 	)
 }
 
-func navButton(label string, dest string) Node {
+func NavButton(label string, dest string) Node {
 	return A(
+		Class("button"),
 		Href(dest),
 		Text(label),
 	)
 }
 
-func alert(label string, class string) Node {
+func Alert(label string, class string) Node {
 	return Div(
 		Class("alert "+class),
 		Text(label),
 	)
 }
 
-func alertError(label string) Node {
-	return alert(label, "error")
+func AlertError(label string) Node {
+	return Alert(label, "error")
 }
 
-func alertSuccess(label string) Node {
-	return alert(label, "success")
+func AlertSuccess(label string) Node {
+	return Alert(label, "success")
 }

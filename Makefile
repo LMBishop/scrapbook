@@ -8,6 +8,7 @@ all: build
 build:
 	go build -ldflags "-X 'github.com/LMBishop/scrapbook/pkg/constants.SysConfDir=${SYS_CONF_DIR}' -X 'github.com/LMBishop/scrapbook/pkg/constants.SysDataDir=${SYS_DATA_DIR}'" -o ${BINARY_NAME} main.go
 
+.PHONY: runlocal
 runlocal:
 	PWD=$(shell pwd)
 	mkdir -p runlocal

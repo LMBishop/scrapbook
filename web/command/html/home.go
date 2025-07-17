@@ -5,16 +5,17 @@ import (
 
 	"github.com/LMBishop/scrapbook/pkg/index"
 	"github.com/LMBishop/scrapbook/pkg/site"
+	. "github.com/LMBishop/scrapbook/web/skeleton"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
 
 func HomePage(siteIndex *index.SiteIndex) Node {
-	return page("All sites",
+	return Page("All sites",
 		H1(Text("All sites")),
 
 		Div(
-			Class("sites-table"),
+			Class("table sites-table"),
 			Group{
 				Span(
 					Class("header name"),
@@ -58,18 +59,18 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 					),
 					Span(
 						Class("actions"),
-						navButton("Details", fmt.Sprintf("/site/%s/", site.Name)),
+						NavButton("Details", fmt.Sprintf("/site/%s/", site.Name)),
 					),
 				}
 			}),
 		),
 
-		If(len(siteIndex.GetSites()) == 0, alert("There are no sites to display", "")),
+		If(len(siteIndex.GetSites()) == 0, Alert("There are no sites to display", "")),
 
 		Div(
 			Class("control-group group-right"),
 
-			navButton("Create new", "/create"),
+			NavButton("Create new", "/create"),
 		),
 	)
 }

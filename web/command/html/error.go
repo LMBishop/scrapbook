@@ -1,13 +1,14 @@
 package html
 
 import (
+	. "github.com/LMBishop/scrapbook/web/skeleton"
 	. "maragu.dev/gomponents"
 )
 
 func ErrorPage(err string) Node {
-	return page("Error",
-		alertError(err),
+	return Page("Error",
+		AlertError(err),
 
-		navButton("Home", "/"),
+		NavButton("Home", "/"),
 	)
 }

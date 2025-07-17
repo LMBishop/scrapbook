@@ -3,24 +3,25 @@ package html
 import (
 	"fmt"
 
+	. "github.com/LMBishop/scrapbook/web/skeleton"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
 
 func DeletePage(success, err string, siteName string) Node {
-	return page("Delete "+siteName,
+	return Page("Delete "+siteName,
 		H1(Text("Delete "+siteName)),
 
 		If(success != "", Group{
-			alertSuccess(success),
+			AlertSuccess(success),
 			Div(
 				Class("control-group group-right"),
-				navButton("OK", "/"),
+				NavButton("OK", "/"),
 			),
 		}),
 
 		If(success == "", Group{
-			If(err != "", alertError(err)),
+			If(err != "", AlertError(err)),
 
 			Form(
 				Method("post"),
@@ -46,7 +47,7 @@ func DeletePage(success, err string, siteName string) Node {
 
 				Div(
 					Class("control-group group-right"),
-					navButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
+					NavButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
 					Input(
 						Type("submit"),
 						Value("Submit"),

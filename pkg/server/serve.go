@@ -1,9 +1,9 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/LMBishop/scrapbook/pkg/html"
 	"github.com/LMBishop/scrapbook/pkg/index"
 )
 
@@ -12,7 +12,7 @@ func ServeSite(siteIndex *index.SiteIndex) func(w http.ResponseWriter, r *http.R
 		site := siteIndex.GetSiteByHost(r.Host)
 		if site == nil {
 			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "unknown host %s", r.Host)
+			html.NotFoundSitePage(r.Host)
 			return
 		}
 

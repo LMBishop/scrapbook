@@ -5,6 +5,7 @@ import (
 
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/site"
+	. "github.com/LMBishop/scrapbook/web/skeleton"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
@@ -13,10 +14,10 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 	versions, err := site.GetAllVersions()
 	currentVersion, _ := site.GetCurrentVersion()
 
-	return page("Site "+site.Name,
+	return Page("Site "+site.Name,
 		H1(Text("Site "+site.Name)),
 
-		If(site.EvaluateSiteStatus() != "live", alertError(site.EvaluateSiteStatusReason())),
+		If(site.EvaluateSiteStatus() != "live", AlertError(site.EvaluateSiteStatusReason())),
 
 		FieldSet(
 			Legend(Text("Site actions")),
@@ -24,19 +25,19 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 			Div(
 				Class("control-group"),
 
-				navButton("Change host", "host"),
-				navButton("Set flags", "flags"),
-				navButton("Delete site", "delete"),
+				NavButton("Change host", "host"),
+				NavButton("Set flags", "flags"),
+				NavButton("Delete site", "delete"),
 			),
 		),
 
 		H2(Text("Version history")),
 
-		If(len(versions) == 0, Span(Class("span"), alert("There are no versions to display", ""))),
-		If(err != nil, Span(Class("span"), alertError(fmt.Errorf("Cannot show site versions: %w", err).Error()))),
+		If(len(versions) == 0, Span(Class("span"), Alert("There are no versions to display", ""))),
+		If(err != nil, Span(Class("span"), AlertError(fmt.Errorf("Cannot show site versions: %w", err).Error()))),
 		If(len(versions) > 0 && err == nil, Group{
 			Div(
-				Class("versions-table"),
+				Class("table versions-table"),
 				Group{
 					Span(
 						Class("header date"),
@@ -57,8 +58,8 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 						),
 						Span(
 							Class("actions"),
-							If(currentVersion != version, navButton("Set current", fmt.Sprintf("/site/%s/", site.Name))),
-							navButton("Details", fmt.Sprintf("version/%s/", version)),
+							If(currentVersion != version, NavButton("Set current", fmt.Sprintf("/site/%s/", site.Name))),
+							NavButton("Details", fmt.Sprintf("version/%s/", version)),
 						),
 					}
 				}),
@@ -67,7 +68,7 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 		Div(
 			Class("control-group group-right"),
 
-			navButton("Upload new version", "upload"),
+			NavButton("Upload new version", "upload"),
 		),
 
 		H2(Text("Information")),
@@ -78,6 +79,6 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 
 		Br(),
 
-		navButton("Go back", "/"),
+		NavButton("Go back", "/"),
 	)
 }

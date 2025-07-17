@@ -1,15 +1,16 @@
 package html
 
 import (
+	. "github.com/LMBishop/scrapbook/web/skeleton"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
 
 func AuthenticatePage(err string) Node {
-	return page("Authenticate",
+	return Page("Authenticate",
 		H1(Text("Welcome to scrapbook")),
 
-		If(err != "", alertError(err)),
+		If(err != "", AlertError(err)),
 
 		Form(
 			Action("/authenticate"),

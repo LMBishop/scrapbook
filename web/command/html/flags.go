@@ -4,24 +4,25 @@ import (
 	"fmt"
 
 	"github.com/LMBishop/scrapbook/pkg/config"
+	. "github.com/LMBishop/scrapbook/web/skeleton"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
 
 func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node {
-	return page("Set flags for "+siteName,
+	return Page("Set flags for "+siteName,
 		H1(Text("Set flags for "+siteName)),
 
 		If(success != "", Group{
-			alertSuccess(success),
+			AlertSuccess(success),
 			Div(
 				Class("control-group group-right"),
-				navButton("OK", fmt.Sprintf("/site/%s/", siteName)),
+				NavButton("OK", fmt.Sprintf("/site/%s/", siteName)),
 			),
 		}),
 
 		If(success == "", Group{
-			If(err != "", alertError(err)),
+			If(err != "", AlertError(err)),
 
 			Form(
 				Method("post"),
@@ -70,7 +71,6 @@ func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node
 							ID("index"),
 							Name("index"),
 							Type("checkbox"),
-							Disabled(),
 							If(flags&config.FlagIndex != 0, Checked()),
 						),
 						Label(
@@ -121,7 +121,7 @@ func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node
 
 				Div(
 					Class("control-group group-right"),
-					navButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
+					NavButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
 					Input(
 						Type("submit"),
 						Value("Submit"),

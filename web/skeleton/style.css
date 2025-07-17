@@ -16,7 +16,7 @@ th {
     background-color: #f2f2f2;
 }
 
-a, input[type=submit] {
+a.button, input[type=submit] {
     /* font-weight: bold; */
     border: 1px solid #000!important;
     color: #000;
@@ -26,8 +26,8 @@ a, input[type=submit] {
     text-decoration: none;
 }
 
-a :visited{
-    color: #fff;
+a.button:visited{
+    color: #000;
 }
 
 form {
@@ -70,7 +70,7 @@ button, input[type=submit] {
     cursor: pointer;
 }
 
-a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[type=submit]:active {
+a.button:hover, button:hover, input[type=submit]:hover, button:active, a.button:active, input[type=submit]:active {
     background: #000!important;
     color: #fff!important;
 }
@@ -94,22 +94,39 @@ a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[
     justify-content: flex-end;
 }
 
-.control-group a, .control-group button, .control-group input[type=submit] {
+.control-group a.button, .control-group button, .control-group input[type=submit] {
     text-decoration: none;
     width: initial;
 }
 
-.sites-table {
+.table {
     width: 100%;
-    display: grid;
-    grid-template-columns: 40% 1fr 1fr 1fr;
     align-items: center;
+    display: grid;
     gap: 1rem;
     margin-bottom: 1rem;
 }
 
-.sites-table > .header, .versions-table > .header {
+.table > .header {
     font-weight: bold;
+}
+
+.files-table {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.files-table > a.name {
+    width: 100%;
+    border: none !important;
+    color: #0074D9 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-decoration: none;
+}
+
+.sites-table {
+    grid-template-columns: 40% 1fr 1fr 1fr;
 }
 
 .sites-table > .name {
@@ -132,12 +149,7 @@ a:hover, button:hover, input[type=submit]:hover, button:active, a:active, input[
 }
 
 .versions-table {
-    width: 100%;
-    display: grid;
     grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
 }
 
 .versions-table > .span {

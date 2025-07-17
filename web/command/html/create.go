@@ -1,6 +1,7 @@
 package html
 
 import (
+	. "github.com/LMBishop/scrapbook/web/skeleton"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
@@ -11,19 +12,19 @@ type CreatePageForm struct {
 }
 
 func CreatePage(success, err string, formValues CreatePageForm) Node {
-	return page("Create site",
+	return Page("Create site",
 		H1(Text("Create site")),
 
 		If(success != "", Group{
-			alertSuccess(success),
+			AlertSuccess(success),
 			Div(
 				Class("control-group group-right"),
-				navButton("OK", "/"),
+				NavButton("OK", "/"),
 			),
 		}),
 
 		If(success == "", Group{
-			If(err != "", alertError(err)),
+			If(err != "", AlertError(err)),
 
 			Form(
 				Action("/create"),
@@ -62,7 +63,7 @@ func CreatePage(success, err string, formValues CreatePageForm) Node {
 
 				Div(
 					Class("control-group group-right"),
-					navButton("Go back", "/"),
+					NavButton("Go back", "/"),
 					Input(
 						Type("submit"),
 						Value("Submit"),

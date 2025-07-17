@@ -30,7 +30,7 @@ func NewSite(name string, dir string, config *config.SiteConfig) *Site {
 	site.Name = name
 	site.Path = dir
 	site.SiteConfig = config
-	site.Handler = http.FileServer(siteFS{http.Dir(path.Join(dir, "default"))})
+	site.Handler = NewSiteFileServer(http.Dir(path.Join(dir, "default")), config)
 	return &site
 }
 
