@@ -3,6 +3,7 @@ package handler
 import (
 	"crypto/subtle"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -25,6 +26,7 @@ func UploadSiteVersion(mainConfig *config.MainConfig, index *index.SiteIndex) fu
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "could not read stream: %s", err.Error())
+			slog.Error("could not read stream", "remoteAddr", r.RemoteAddr, "error", err)
 			return
 		}
 
@@ -32,9 +34,11 @@ func UploadSiteVersion(mainConfig *config.MainConfig, index *index.SiteIndex) fu
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, err.Error())
+			slog.Error("could not handle upload", "remoteAddr", r.RemoteAddr, "error", err)
 			return
 		}
 
+		slog.Info("new version created", "site", site, "version", version, "remoteAddr", r.RemoteAddr)
 		fmt.Fprintf(w, "version created: %s", version)
 	}
 }
