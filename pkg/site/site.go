@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/LMBishop/scrapbook/pkg/auth"
 	"github.com/LMBishop/scrapbook/pkg/config"
 )
 
@@ -19,10 +20,11 @@ const versionRegex = "[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}"
 const timeFormat = "2006_01_02_15_04_05"
 
 type Site struct {
-	Name       string
-	Path       string
-	Handler    http.Handler
-	SiteConfig *config.SiteConfig
+	Name          string
+	Path          string
+	Handler       http.Handler
+	Authenticator *auth.Authenticator
+	SiteConfig    *config.SiteConfig
 }
 
 func NewSite(name string, dir string, config *config.SiteConfig) *Site {
@@ -30,6 +32,7 @@ func NewSite(name string, dir string, config *config.SiteConfig) *Site {
 	site.Name = name
 	site.Path = dir
 	site.SiteConfig = config
+	site.Authenticator = auth.NewAuthenticator()
 	site.Handler = NewSiteFileServer(http.Dir(path.Join(dir, "default")), config)
 	return &site
 }

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"crypto/rand"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -11,8 +12,11 @@ type Authenticator struct {
 	parser    *jwt.Parser
 }
 
-func NewAuthenticator(secretKey []byte) *Authenticator {
+func NewAuthenticator() *Authenticator {
 	parser := jwt.NewParser(jwt.WithIssuer("scrapbook"), jwt.WithExpirationRequired())
+
+	secretKey := make([]byte, 32)
+	rand.Read(secretKey)
 
 	a := &Authenticator{
 		secretKey: secretKey,

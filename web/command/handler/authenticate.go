@@ -14,7 +14,7 @@ import (
 
 func GetAuthenticate() func(http.ResponseWriter, *http.Request) {
 	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
-		return html.AuthenticatePage(""), nil
+		return html.AuthenticateScrapbookPage(""), nil
 	})
 }
 
@@ -22,20 +22,20 @@ func PostAuthenticate(mainConfig *config.MainConfig, authenticator *auth.Authent
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
-			html.AuthenticatePage(err.Error()).Render(w)
+			html.AuthenticateScrapbookPage(err.Error()).Render(w)
 			return
 		}
 
 		token := r.Form.Get("token")
 
 		if len(mainConfig.Command.Secret) == 0 || subtle.ConstantTimeCompare([]byte(token), []byte(mainConfig.Command.Secret)) != 1 {
-			html.AuthenticatePage("The secret key is incorrect").Render(w)
+			html.AuthenticateScrapbookPage("The secret key is incorrect").Render(w)
 			return
 		}
 
 		jwt, err := authenticator.NewJwt()
 		if err != nil {
-			html.AuthenticatePage(fmt.Errorf("Failed to create jwt: %w", err).Error()).Render(w)
+			html.AuthenticateScrapbookPage(fmt.Errorf("Failed to create jwt: %w", err).Error()).Render(w)
 			return
 		}
 

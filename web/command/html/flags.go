@@ -88,7 +88,6 @@ func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node
 							ID("password"),
 							Name("password"),
 							Type("checkbox"),
-							Disabled(),
 							If(flags&config.FlagPassword != 0, Checked()),
 						),
 						Label(

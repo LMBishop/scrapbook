@@ -17,9 +17,10 @@ const (
 )
 
 type SiteConfig struct {
-	Host string
+	Flags SiteFlag `scfg:"flags"`
 
-	Flags SiteFlag
+	Host     string `scfg:"host"`
+	Password string `scfg:"password"`
 }
 
 func ReadSiteConfig(filePath string, dst *SiteConfig) error {

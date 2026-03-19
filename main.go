@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/rand"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -43,10 +42,7 @@ func main() {
 
 	slog.Info("initial data directory scan complete", "sites", len(siteIndex.GetSites()))
 
-	secretKey := make([]byte, 32)
-	rand.Read(secretKey)
-
-	authenticator := auth.NewAuthenticator(secretKey)
+	authenticator := auth.NewAuthenticator()
 
 	mux := http.NewServeMux()
 
