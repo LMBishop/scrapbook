@@ -17,7 +17,14 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 	return Page("Site "+site.Name,
 		H1(Text("Site "+site.Name)),
 
-		If(site.EvaluateSiteStatus() != "live", AlertError(site.EvaluateSiteStatusReason())),
+		func() Node {
+			status, reason := site.EvaluateSiteStatus()
+			if status != "live" {
+				return AlertError(reason)
+			} else {
+				return Raw("")
+			}
+		}(),
 
 		FieldSet(
 			Legend(Text("Site actions")),
@@ -25,9 +32,8 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 			Div(
 				Class("control-group"),
 
-				NavButton("Change host", "host"),
 				NavButton("Set flags", "flags"),
-				NavButton("Change password", "password"),
+				NavButton("Change config", "config"),
 				NavButton("Delete site", "delete"),
 			),
 		),
@@ -74,7 +80,7 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 
 		H2(Text("Information")),
 
-		P(Text("API endpoint for new versions: "), Code(Text(fmt.Sprintf("POST https://%s/api/site/%s/upload", mainConfig.Command.Host, site.Name)))),
+		P(Text("API endpoint for new versions: "), Code(Text(fmt.Sprintf("POST https://%s/api/site/%s/upload", mainConfig.Control.Host, site.Name)))),
 
 		P(Text("Data directory on system: "), Code(Text(site.Path))),
 

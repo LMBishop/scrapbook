@@ -36,7 +36,7 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 			},
 
 			Map(siteIndex.GetSites(), func(site *site.Site) Node {
-				status := site.EvaluateSiteStatus()
+				status, _ := site.EvaluateSiteStatus()
 				good := false
 				if status == "live" {
 					good = true
@@ -45,8 +45,16 @@ func HomePage(siteIndex *index.SiteIndex) Node {
 					Span(
 						Class("name"),
 						Span(Text(site.Name)),
-						If(site.SiteConfig.Host == "", Span(Text("no host"))),
-						If(site.SiteConfig.Host != "", Span(Text(fmt.Sprintf("on %s", site.SiteConfig.Host)))),
+						Span(func() Node {
+							if site.Config != nil {
+								if site.Config.Host == "" {
+									return Text("no host")
+								} else {
+									return Text(fmt.Sprintf("on %s", site.Config.Host))
+								}
+							}
+							return Raw("")
+						}()),
 					),
 					Span(
 						If(good, Class("status text-good")),

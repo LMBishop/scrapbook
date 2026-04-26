@@ -1,7 +1,6 @@
 package index
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 	"path"
@@ -23,25 +22,27 @@ func ScanDirectory(dir string, dst *SiteIndex) error {
 
 		siteName := e.Name()
 		sitePath := path.Join(dir, siteName)
-		cfg, err := readSiteConfig(sitePath)
-		if err != nil {
-			slog.Warn("failed to read site", "site", siteName, "reason", err)
-			continue
+		site := &site.Site{
+			Name: siteName,
+			Path: sitePath,
 		}
 
-		site := site.NewSite(siteName, sitePath, cfg)
+		cfgStr, err := site.ReadSiteConfigFile()
+		if err != nil {
+			slog.Warn("failed to read site config", "site", siteName, "reason", err)
+		} else {
+			cfg, err := config.SiteConfigFromString(cfgStr)
+			if err != nil {
+				slog.Warn("failed to parse site config", "site", siteName, "reason", err)
+			} else {
+				site.Config = &cfg
+			}
+		}
+
+		site.Flags = site.ReadSiteFlags()
+		site.Initialise()
 		dst.AddSite(site)
 	}
 
 	return nil
-}
-
-func readSiteConfig(dir string) (*config.SiteConfig, error) {
-	siteFile := path.Join(dir, "site.toml")
-	cfg := &config.SiteConfig{}
-	err := config.ReadSiteConfig(siteFile, cfg)
-	if err != nil {
-		return nil, fmt.Errorf("site file invalid: %s", err)
-	}
-	return cfg, nil
 }

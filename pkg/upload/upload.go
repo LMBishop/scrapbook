@@ -20,7 +20,7 @@ func HandleUpload(siteName string, reader *multipart.Reader, index *index.SiteIn
 		return "", fmt.Errorf("no such site: %s", siteName)
 	}
 
-	if s.SiteConfig.Flags&config.FlagReadOnly != 0 {
+	if s.Flags&config.FlagReadOnly != 0 {
 		return "", fmt.Errorf("site is read only: %s", siteName)
 	}
 

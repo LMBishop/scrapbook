@@ -1,26 +1,66 @@
 package site
 
 import (
+	"crypto/subtle"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/LMBishop/scrapbook/pkg/auth"
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/html"
 )
 
 type SiteFileServer struct {
-	root       http.FileSystem
-	siteConfig *config.SiteConfig
+	root          http.FileSystem
+	logger        *slog.Logger
+	flags         config.SiteFlag
+	config        config.SiteConfig
+	authenticator auth.Authenticator
 }
 
-func NewSiteFileServer(root http.FileSystem, siteConfig *config.SiteConfig) *SiteFileServer {
-	return &SiteFileServer{root: root, siteConfig: siteConfig}
+func NewSiteFileServer(root http.FileSystem, logger *slog.Logger, flags config.SiteFlag, config config.SiteConfig) *SiteFileServer {
+	return &SiteFileServer{root: root, logger: logger, flags: flags, config: config, authenticator: *auth.NewAuthenticator()}
 }
 
 func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if fs.flags&config.FlagDisable != 0 {
+		w.WriteHeader(http.StatusForbidden)
+		html.ForbiddenDisabledPage(fs.config.Host).Render(w)
+		return
+	}
+
+	if fs.flags&config.FlagPassword != 0 {
+		jwt, err := r.Cookie("session")
+		if err != nil {
+			goto deny
+		}
+
+		err = fs.authenticator.VerifyJwt(jwt.Value)
+		if err != nil {
+			goto deny
+		}
+
+		goto permit
+
+	deny:
+		if strings.HasPrefix(r.URL.Path, "/authenticate") {
+			goto ask
+		}
+		http.Redirect(w, r, "/authenticate?redirect="+url.QueryEscape(r.URL.Path), 302)
+		return
+
+	ask:
+		fs.handleAskPassword(w, r)
+		return
+
+	permit:
+	}
+
 	path := filepath.Clean(r.URL.Path)
 
 	var info os.FileInfo
@@ -50,7 +90,7 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		indexPath := filepath.Join(path, "index.html")
 		if file, err = fs.root.Open(indexPath); os.IsNotExist(err) {
-			if fs.siteConfig.Flags&config.FlagIndex == 0 {
+			if fs.flags&config.FlagIndex == 0 {
 				goto notFound
 			}
 			files, err := fs.listFiles(path)
@@ -59,7 +99,7 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			if err != nil {
 				html.IndexPage(path, true, files).Render(w)
-				slog.Error("could not list directory for index page generation", "host", fs.siteConfig.Host, "path", path, "error", err)
+				fs.logger.Error("could not list directory for index page generation", "path", path, "error", err)
 			} else {
 				html.IndexPage(path, false, files).Render(w)
 			}
@@ -77,7 +117,7 @@ func (fs *SiteFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 notFound:
 	w.WriteHeader(http.StatusNotFound)
-	html.NotFoundUrlPage(path, fs.siteConfig.Host).Render(w)
+	html.NotFoundUrlPage(path).Render(w)
 }
 
 func (fs *SiteFileServer) listFiles(dir string) ([]html.File, error) {
@@ -102,4 +142,44 @@ func (fs *SiteFileServer) listFiles(dir string) ([]html.File, error) {
 	}
 
 	return files, nil
+}
+
+func (fs *SiteFileServer) handleAskPassword(w http.ResponseWriter, r *http.Request) {
+	redirect := r.URL.Query().Get("redirect")
+
+	switch r.Method {
+	case "GET":
+		html.AuthenticateSitePage("", redirect).Render(w)
+	case "POST":
+		err := r.ParseForm()
+		if err != nil {
+			html.AuthenticateSitePage(err.Error(), redirect).Render(w)
+			return
+		}
+
+		password := r.Form.Get("password")
+
+		if len(fs.config.Password) == 0 || subtle.ConstantTimeCompare([]byte(password), []byte(fs.config.Password)) != 1 {
+			html.AuthenticateSitePage("The password is incorrect", redirect).Render(w)
+			return
+		}
+
+		jwt, err := fs.authenticator.NewJwt()
+		if err != nil {
+			html.AuthenticateSitePage(fmt.Errorf("Failed to create jwt: %w", err).Error(), redirect).Render(w)
+			return
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:  "session",
+			Value: jwt,
+
+			Secure:   true,
+			SameSite: http.SameSiteStrictMode,
+			HttpOnly: true,
+		})
+		http.Redirect(w, r, redirect, 302)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
 }

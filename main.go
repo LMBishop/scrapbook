@@ -21,9 +21,13 @@ func main() {
 	slog.Info("welcome to scrapbook")
 
 	var cfg config.MainConfig
-	err := config.ReadMainConfig(filepath.Join(constants.SysConfDir, "config.toml"), &cfg)
+	cfgStr, err := os.ReadFile(filepath.Join(constants.SysConfDir, "config"))
 	if err != nil {
 		panic(fmt.Errorf("main config read failed: %w", err))
+	}
+	cfg, err = config.MainConfigFromString(string(cfgStr))
+	if err != nil {
+		panic(fmt.Errorf("main config parse failed: %w", err))
 	}
 	err = config.ValidateMainConfig(&cfg)
 	if err != nil {
@@ -46,18 +50,18 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	if cfg.Command.Host == "" {
-		slog.Warn("command interface host is empty - neither api or web interface will be accessible")
+	if cfg.Control.Host == "" {
+		slog.Warn("control interface host is empty - neither api or web interface will be accessible")
 	} else {
-		mux.Handle(fmt.Sprintf("%s/api/", cfg.Command.Host), http.StripPrefix("/api", api.NewMux(&cfg, siteIndex)))
-		mux.Handle(fmt.Sprintf("%s/", cfg.Command.Host), web.NewMux(&cfg, siteIndex, authenticator))
+		mux.Handle(fmt.Sprintf("%s/api/", cfg.Control.Host), http.StripPrefix("/api", api.NewMux(&cfg, siteIndex)))
+		mux.Handle(fmt.Sprintf("%s/", cfg.Control.Host), web.NewMux(&cfg, siteIndex, authenticator))
 	}
 	mux.HandleFunc("/", server.ServeSite(siteIndex))
 
-	if cfg.Command.Secret == "" {
-		slog.Warn("command interface secret is empty - neither api or web interface will be accessible")
+	if cfg.Control.Secret == "" {
+		slog.Warn("control interface secret is empty - neither api or web interface will be accessible")
 	}
 
-	err = http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Listen.Address, cfg.Listen.Port), mux)
+	err = http.ListenAndServe(cfg.Listen, mux)
 	slog.Error("http server closing", "reason", err.Error())
 }

@@ -7,47 +7,34 @@ database and uses the file system for organisation, to allow easy interoperabili
 if you wish to serve sites using another web server.
 
 It was originally built for me to use in conjunction with my own
-[static site generator](https://github.com/LMBishop/panulat) in a GitHub workflow.
+[static site generator](https://git.leonardobishop.net/panulat) in a CI job.
 
 ## Installation
 
-This program is designed to work on any Linux machine. There is a provided Makefile
-with `install`, `install-config`, and `install-service` targets. To install the
-program itself:
+This program is designed to work on any Linux machine. Install to `/usr/local/bin`
+with:
 
 ```bash
 make
 make install
 ```
 
-If this is the first installation, then you may also want to install the default
-configuration with the `install-config` target.
-
-```bash
-make install-config
-```
-
-If you are on a systemd distribution, then there is also a provided service file which
-the `install-service` target will install. This target will also create a `scrapbook`
-user on the system.
-
-```bash
-make install-service
-```
+There is a sample configuration file and service file in `contrib`. By default,
+scrapbook will look for its configuration at `/etc/scrapbook/config`.
 
 ## Configuration
 
-Scrapbook will look for its configuration in `/etc/scrapbook/` by default. You can
-run the `install-config` target to install the provided [default configuration](https://github.com/LMBishop/scrapbook/blob/master/dist/config.toml).
-
 You must set a hostname and secret for the web management interface and API. (I
-collectively call these the 'Command' interfaces, as it is the way you issue
+collectively call these the 'Control' interfaces, as it is the way you issue
 commands to scrapbook.)
 
 ```toml
-[Command]
-Host = ''
-Secret = ''
+listen "0.0.0.0:80"
+
+control {
+  host   ""
+  secret ""
+}
 ```
 
 If either values are left blank, then the web management interface and API will

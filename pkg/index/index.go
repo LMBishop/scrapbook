@@ -73,8 +73,8 @@ func (s *SiteIndex) UpdateSiteIndexes() {
 func (s *SiteIndex) updateSiteIndexes() {
 	clear(s.sitesByHost)
 	for _, site := range s.sites {
-		if site.SiteConfig.Host != "" {
-			s.sitesByHost[site.SiteConfig.Host] = site
+		if site.Config != nil && site.Config.Host != "" {
+			s.sitesByHost[site.Config.Host] = site
 		}
 	}
 }

@@ -8,9 +8,9 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func HostPage(success, err, siteName, hostValue string) Node {
-	return Page("Change host for "+siteName,
-		H1(Text("Change host for "+siteName)),
+func ConfigPage(success, err, siteName, configValue string) Node {
+	return Page("Change configuration for "+siteName,
+		H1(Text("Change configuration for "+siteName)),
 
 		If(success != "", Group{
 			AlertSuccess(success),
@@ -26,16 +26,19 @@ func HostPage(success, err, siteName, hostValue string) Node {
 			Form(
 				Method("post"),
 
+				P(Text("This configuration file defines how scrapbook handles this site. To change the behaviour of the internal web server, set site flags instead. This configuration file is saved at the root of the site data directory.")),
+
 				FieldSet(
-					Legend(Text("Host")),
-					Input(
-						ID("host"),
-						Name("host"),
-						Value(hostValue),
+					Legend(Text("Configuration")),
+					Textarea(
+						ID("config"),
+						Name("config"),
+						Rows("15"),
+						Text(configValue),
 					),
 					Span(
 						Class("form-help"),
-						Text("The fully qualified domain name for which this site is to be served on. If this site is not to be served by scrapbook, leave blank."),
+						Text("See below for a configuration reference."),
 					),
 				),
 
@@ -46,6 +49,11 @@ func HostPage(success, err, siteName, hostValue string) Node {
 						Type("submit"),
 						Value("Submit"),
 					),
+				),
+
+				FieldSet(
+					Legend(Text("Reference")),
+					Text("Yadda yadda"),
 				),
 			),
 		}),

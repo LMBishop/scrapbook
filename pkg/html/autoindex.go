@@ -1,7 +1,6 @@
 package html
 
 import (
-	"fmt"
 	"strconv"
 
 	. "github.com/LMBishop/scrapbook/web/skeleton"
@@ -63,6 +62,6 @@ func IndexPage(dir string, err bool, files []File) Node {
 			})),
 		),
 
-		If(err, AlertError(fmt.Sprintf("Failed to list directory"))),
+		If(err, AlertError("Failed to list directory")),
 	)
 }

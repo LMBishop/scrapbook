@@ -3,16 +3,17 @@ package site
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/LMBishop/scrapbook/pkg/auth"
 	"github.com/LMBishop/scrapbook/pkg/config"
 )
 
@@ -20,21 +21,12 @@ const versionRegex = "[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}"
 const timeFormat = "2006_01_02_15_04_05"
 
 type Site struct {
-	Name          string
-	Path          string
-	Handler       http.Handler
-	Authenticator *auth.Authenticator
-	SiteConfig    *config.SiteConfig
-}
+	Name   string
+	Path   string
+	Flags  config.SiteFlag
+	Config *config.SiteConfig
 
-func NewSite(name string, dir string, config *config.SiteConfig) *Site {
-	var site Site
-	site.Name = name
-	site.Path = dir
-	site.SiteConfig = config
-	site.Authenticator = auth.NewAuthenticator()
-	site.Handler = NewSiteFileServer(http.Dir(path.Join(dir, "default")), config)
-	return &site
+	handler http.Handler
 }
 
 func CreateNewSite(name string, baseDir string, host string) (*Site, error) {
@@ -47,22 +39,36 @@ func CreateNewSite(name string, baseDir string, host string) (*Site, error) {
 		return nil, fmt.Errorf("failed to check site uniqueness: %w", err)
 	}
 
-	cfg := &config.SiteConfig{
-		Host: host,
+	cfg, strCfg := config.NewSiteConfig(host)
+	site := &Site{
+		Name:   name,
+		Path:   dir,
+		Flags:  0,
+		Config: &cfg,
 	}
-	site := NewSite(name, dir, cfg)
 
 	err = os.Mkdir(dir, 0o755)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	err = config.WriteSiteConfig(path.Join(dir, "site.toml"), cfg)
+	err = os.WriteFile(path.Join(dir, "config"), []byte(strCfg), 0o644)
 	if err != nil {
 		return nil, fmt.Errorf("failed to write site config: %w", err)
 	}
 
 	return site, nil
+}
+
+func (s *Site) Initialise() {
+	s.handler = nil
+	if s.Config != nil {
+		s.handler = NewSiteFileServer(http.Dir(path.Join(s.Path, "default")), slog.With("site", s.Name), s.Flags, *s.Config)
+	}
+}
+
+func (s *Site) Handler() http.Handler {
+	return s.handler
 }
 
 func (s *Site) GetCurrentPath() string {
@@ -143,34 +149,25 @@ func (s *Site) CreateNewVersion() (string, error) {
 	return dirName, nil
 }
 
-func (s *Site) EvaluateSiteStatus() string {
-	if s.SiteConfig.Host == "" {
-		return "inactive"
+func (s *Site) EvaluateSiteStatus() (string, string) {
+	if s.Config == nil {
+		return "error", "This site does not have a valid configuration"
+	}
+	if s.Config.Host == "" {
+		return "inactive", "This site is not served by scrapbook"
 	}
 	stat, err := os.Stat(s.GetCurrentPath())
 	if err != nil || !stat.IsDir() {
-		return "inactive"
+		return "disabled", "This site is disabled because no version is active"
 	}
-	if s.SiteConfig.Flags&config.FlagDisable != 0 {
-		return "inactive"
+	if s.Flags&config.FlagDisable != 0 {
+		return "disabled", "This site is disabled because the disable flag is set"
 	}
-
-	return "live"
-}
-
-func (s *Site) EvaluateSiteStatusReason() string {
-	if s.SiteConfig.Host == "" {
-		return "This site is not served by scrapbook"
-	}
-	stat, err := os.Stat(s.GetCurrentPath())
-	if err != nil || !stat.IsDir() {
-		return "This site is inacessible because no version is active"
-	}
-	if s.SiteConfig.Flags&config.FlagDisable != 0 {
-		return "This site is inacessible because it is disabled"
+	if s.Flags&config.FlagPassword != 0 && s.Config.Password == "" {
+		return "error", "This site is live, but inacessible because the password is empty and the password protect flag is set"
 	}
 
-	return "This site is live"
+	return "live", "This site is live"
 }
 
 func (s *Site) ConvertFlagsToString() string {
@@ -178,7 +175,7 @@ func (s *Site) ConvertFlagsToString() string {
 	bitNames := []string{"D", "T", "I", "P", "R"}
 
 	for i := 0; i < len(bitNames); i++ {
-		if s.SiteConfig.Flags&(1<<i) != 0 {
+		if s.Flags&(1<<i) != 0 {
 			bits = append(bits, bitNames[i])
 		} else {
 			bits = append(bits, "-")
@@ -186,4 +183,23 @@ func (s *Site) ConvertFlagsToString() string {
 	}
 
 	return strings.Join(bits, "")
+}
+
+func (s *Site) ReadSiteConfigFile() (string, error) {
+	config, err := os.ReadFile(path.Join(s.Path, "config"))
+	return string(config), err
+}
+
+func (s *Site) WriteSiteConfigFile(config string) error {
+	return os.WriteFile(path.Join(s.Path, "config"), []byte(config), 0o644)
+}
+
+func (s *Site) ReadSiteFlags() config.SiteFlag {
+	flags, _ := os.ReadFile(path.Join(s.Path, "flags"))
+	val, _ := strconv.ParseUint(string(flags), 10, 64)
+	return config.SiteFlag(val)
+}
+
+func (s *Site) WriteSiteFlags(flags config.SiteFlag) error {
+	return os.WriteFile(path.Join(s.Path, "flags"), []byte(strconv.Itoa(int(flags))), 0o644)
 }

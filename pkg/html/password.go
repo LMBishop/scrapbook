@@ -8,7 +8,7 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func AuthenticateSitePage(err, redirect, siteName string) Node {
+func AuthenticateSitePage(err, redirect string) Node {
 	return Page("Authenticate",
 		H1(Text("A password is required to visit this site")),
 

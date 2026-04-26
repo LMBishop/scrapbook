@@ -1,9 +1,10 @@
 package config
 
 import (
-	"os"
+	"fmt"
+	"strings"
 
-	"github.com/pelletier/go-toml/v2"
+	"codeberg.org/emersion/go-scfg"
 )
 
 type SiteFlag uint
@@ -17,32 +18,25 @@ const (
 )
 
 type SiteConfig struct {
-	Flags SiteFlag `scfg:"flags"`
-
-	Host     string `scfg:"host"`
-	Password string `scfg:"password"`
+	Host      string `scfg:"host"`
+	Password  string `scfg:"password"`
+	Retention struct {
+		Amount uint `scfg:"amount"`
+	} `scfg:"retention"`
 }
 
-func ReadSiteConfig(filePath string, dst *SiteConfig) error {
-	config, err := os.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
+const DefaultSiteConfig = `host "%s"
+`
 
-	if err := toml.Unmarshal(config, dst); err != nil {
-		return err
-	}
-	return nil
+func NewSiteConfig(host string) (SiteConfig, string) {
+	var config SiteConfig
+	strConfig := fmt.Sprintf(DefaultSiteConfig, host)
+	scfg.NewDecoder(strings.NewReader(strConfig)).Decode(&config)
+	return config, strConfig
 }
 
-func WriteSiteConfig(filePath string, src *SiteConfig) error {
-	config, err := toml.Marshal(src)
-	if err != nil {
-		return err
-	}
-
-	if err := os.WriteFile(filePath, config, 0o644); err != nil {
-		return err
-	}
-	return nil
+func SiteConfigFromString(str string) (SiteConfig, error) {
+	var config SiteConfig
+	err := scfg.NewDecoder(strings.NewReader(str)).Decode(&config)
+	return config, err
 }

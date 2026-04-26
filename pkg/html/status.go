@@ -8,11 +8,11 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func NotFoundUrlPage(url, host string) Node {
+func NotFoundUrlPage(url string) Node {
 	return Page("Page not found",
 		H1(Text("Page not found")),
 
-		P(Text(fmt.Sprintf("The URL %s could not be found on site %s", url, host))),
+		P(Text(fmt.Sprintf("The URL %s could not be found", url))),
 	)
 }
 

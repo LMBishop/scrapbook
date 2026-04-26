@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"path"
 
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/index"
@@ -23,7 +22,7 @@ func GetFlags(index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
 			return html.ErrorPage("Unknown site: " + siteName), nil
 		}
 
-		return html.FlagsPage("", "", siteName, site.SiteConfig.Flags), nil
+		return html.FlagsPage("", "", siteName, site.Flags), nil
 	})
 }
 
@@ -40,7 +39,7 @@ func PostFlags(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.
 
 		err := r.ParseForm()
 		if err != nil {
-			return html.FlagsPage("", fmt.Errorf("Could not parse form: %w", err).Error(), siteName, site.SiteConfig.Flags), nil
+			return html.FlagsPage("", fmt.Errorf("Could not parse form: %w", err).Error(), siteName, site.Flags), nil
 		}
 
 		var flags config.SiteFlag
@@ -60,11 +59,13 @@ func PostFlags(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.
 			flags = flags | config.FlagReadOnly
 		}
 
-		site.SiteConfig.Flags = flags
-		err = config.WriteSiteConfig(path.Join(site.Path, "site.toml"), site.SiteConfig)
+		site.Flags = flags
+		err = site.WriteSiteFlags(flags)
 		if err != nil {
 			return html.FlagsPage("", fmt.Errorf("Failed to persist flags: %w", err).Error(), siteName, flags), nil
 		}
+
+		site.Initialise()
 
 		return html.FlagsPage(fmt.Sprintf("Successfully set flags %s", site.ConvertFlagsToString()), "", siteName, flags), nil
 	})

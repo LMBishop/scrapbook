@@ -28,7 +28,7 @@ func PostAuthenticate(mainConfig *config.MainConfig, authenticator *auth.Authent
 
 		token := r.Form.Get("token")
 
-		if len(mainConfig.Command.Secret) == 0 || subtle.ConstantTimeCompare([]byte(token), []byte(mainConfig.Command.Secret)) != 1 {
+		if len(mainConfig.Control.Secret) == 0 || subtle.ConstantTimeCompare([]byte(token), []byte(mainConfig.Control.Secret)) != 1 {
 			html.AuthenticateScrapbookPage("The secret key is incorrect").Render(w)
 			return
 		}

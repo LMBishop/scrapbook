@@ -1,42 +1,33 @@
 package config
 
 import (
-	"os"
+	"strings"
 
+	"codeberg.org/emersion/go-scfg"
 	"github.com/go-playground/validator/v10"
-	"github.com/pelletier/go-toml/v2"
 )
 
 type MainConfig struct {
-	Listen struct {
-		Address string `validate:"required,ip"`
-		Port    uint16 `validate:"required"`
-	}
+	Listen string `scfg:"listen" validate:"required"`
 
-	Command struct {
-		Host   string
-		Secret string
+	Control struct {
+		Host   string `scfg:"host"`
+		Secret string `scfg:"secret"`
 
 		API struct {
-			Enable bool
-		}
+			Enable bool `scfg:"enable"`
+		} `scfg:"api"`
 
 		Web struct {
-			Enable bool
-		}
-	}
+			Enable bool `scfg:"enable"`
+		} `scfg:"web"`
+	} `scfg:"control"`
 }
 
-func ReadMainConfig(filePath string, dst *MainConfig) error {
-	config, err := os.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
-
-	if err := toml.Unmarshal(config, dst); err != nil {
-		return err
-	}
-	return nil
+func MainConfigFromString(str string) (MainConfig, error) {
+	var config MainConfig
+	err := scfg.NewDecoder(strings.NewReader(str)).Decode(&config)
+	return config, err
 }
 
 func ValidateMainConfig(cfg *MainConfig) error {

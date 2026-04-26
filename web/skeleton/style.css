@@ -53,6 +53,10 @@ label:not(input[type=checkbox]+label) {
     font-weight: bold;
 }
 
+textarea {
+    resize: vertical;
+}
+
 input[type=checkbox] {
     margin: 0 0.25rem 0 0;
 }
