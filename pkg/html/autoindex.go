@@ -1,9 +1,10 @@
 package html
 
 import (
-	"strconv"
+	"time"
 
 	. "github.com/LMBishop/scrapbook/web/skeleton"
+	"github.com/dustin/go-humanize"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
@@ -12,7 +13,7 @@ type File struct {
 	Name  string
 	IsDir bool
 	Size  int64
-	Mtime int
+	Mtime time.Time
 }
 
 func IndexPage(dir string, err bool, files []File) Node {
@@ -52,11 +53,12 @@ func IndexPage(dir string, err bool, files []File) Node {
 					Span(
 						Class("size"),
 						If(file.IsDir, Text("--")),
-						If(!file.IsDir, Text(strconv.FormatInt(file.Size, 10)+" bytes")),
+						If(!file.IsDir, Text(humanize.IBytes(uint64(file.Size)))),
 					),
 					Span(
 						Class("last-modified"),
-						Text("--"),
+						If(file.IsDir, Text("--")),
+						If(!file.IsDir, Text(file.Mtime.Format("2006-01-02 15:04:05"))),
 					),
 				}
 			})),

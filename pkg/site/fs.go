@@ -135,7 +135,7 @@ func (fs *SiteFileServer) listFiles(dir string) ([]html.File, error) {
 	var files []html.File
 	for _, entry := range entries {
 		if !entry.IsDir() {
-			files = append(files, html.File{Name: entry.Name(), IsDir: false, Size: entry.Size()})
+			files = append(files, html.File{Name: entry.Name(), IsDir: false, Size: entry.Size(), Mtime: entry.ModTime()})
 		} else {
 			files = append(files, html.File{Name: entry.Name(), IsDir: true, Size: 0})
 		}
