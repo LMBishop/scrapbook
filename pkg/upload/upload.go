@@ -71,6 +71,7 @@ func HandleUpload(siteName string, reader *multipart.Reader, index *index.SiteIn
 }
 
 // https://gosamples.dev/unzip-file/
+// (adapted to add mtimes)
 
 func unzipSource(source, destination string) error {
 	reader, err := zip.OpenReader(source)
@@ -104,6 +105,9 @@ func unzipFile(f *zip.File, destination string) error {
 		if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
 			return err
 		}
+		if modTime := f.FileHeader.Modified; !modTime.IsZero() {
+			os.Chtimes(filePath, modTime, modTime)
+		}
 		return nil
 	}
 
@@ -126,5 +130,10 @@ func unzipFile(f *zip.File, destination string) error {
 	if _, err := io.Copy(destinationFile, zippedFile); err != nil {
 		return err
 	}
+
+	if modTime := f.FileHeader.Modified; !modTime.IsZero() {
+		os.Chtimes(filePath, modTime, modTime)
+	}
+
 	return nil
 }
