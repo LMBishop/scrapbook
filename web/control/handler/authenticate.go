@@ -7,7 +7,7 @@ import (
 
 	"github.com/LMBishop/scrapbook/pkg/auth"
 	"github.com/LMBishop/scrapbook/pkg/config"
-	"github.com/LMBishop/scrapbook/web/command/html"
+	"github.com/LMBishop/scrapbook/web/control/html"
 	. "maragu.dev/gomponents"
 	ghttp "maragu.dev/gomponents/http"
 )

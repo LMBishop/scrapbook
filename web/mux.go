@@ -6,8 +6,8 @@ import (
 	"github.com/LMBishop/scrapbook/pkg/auth"
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/index"
-	"github.com/LMBishop/scrapbook/web/command/handler"
-	"github.com/LMBishop/scrapbook/web/command/middleware"
+	"github.com/LMBishop/scrapbook/web/control/handler"
+	"github.com/LMBishop/scrapbook/web/control/middleware"
 )
 
 func NewMux(cfg *config.MainConfig, siteIndex *index.SiteIndex, authenticator *auth.Authenticator) *http.ServeMux {

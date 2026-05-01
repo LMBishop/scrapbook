@@ -9,7 +9,7 @@ import (
 	"github.com/LMBishop/scrapbook/pkg/constants"
 	"github.com/LMBishop/scrapbook/pkg/index"
 	"github.com/LMBishop/scrapbook/pkg/site"
-	"github.com/LMBishop/scrapbook/web/command/html"
+	"github.com/LMBishop/scrapbook/web/control/html"
 	. "maragu.dev/gomponents"
 	ghttp "maragu.dev/gomponents/http"
 )
