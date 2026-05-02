@@ -8,6 +8,7 @@ import (
 	"github.com/LMBishop/scrapbook/pkg/index"
 	"github.com/LMBishop/scrapbook/pkg/site"
 	"github.com/LMBishop/scrapbook/pkg/upload"
+	. "github.com/LMBishop/scrapbook/pkg/util"
 	"github.com/LMBishop/scrapbook/web/control/html"
 	. "maragu.dev/gomponents"
 	ghttp "maragu.dev/gomponents/http"
@@ -29,7 +30,7 @@ func PostUpload(mainConfig *config.MainConfig, index *index.SiteIndex) func(http
 			return html.UploadPage("", fmt.Errorf("Unexpected error: could not read stream: %w", err).Error(), site.Name), nil
 		}
 
-		version, err := upload.HandleUpload(site.Name, "WebUI", reader, index)
+		version, err := upload.HandleUpload(site.Name, RealIP(r), "WebUI", reader, index)
 		if err != nil {
 			return html.UploadPage("", fmt.Errorf("Unexpected error: %w", err).Error(), site.Name), nil
 		}

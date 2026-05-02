@@ -10,6 +10,7 @@ import (
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/index"
 	"github.com/LMBishop/scrapbook/pkg/upload"
+	. "github.com/LMBishop/scrapbook/pkg/util"
 )
 
 func UploadSiteVersion(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
@@ -31,7 +32,7 @@ func UploadSiteVersion(mainConfig *config.MainConfig, index *index.SiteIndex) fu
 			return
 		}
 
-		version, err := upload.HandleUpload(site, "API", reader, index)
+		version, err := upload.HandleUpload(site, RealIP(r), "API", reader, index)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, err.Error())

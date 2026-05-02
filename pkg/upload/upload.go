@@ -19,7 +19,7 @@ import (
 	"golang.org/x/mod/sumdb/dirhash"
 )
 
-func HandleUpload(siteName, via string, reader *multipart.Reader, index *index.SiteIndex) (string, error) {
+func HandleUpload(siteName, source, via string, reader *multipart.Reader, index *index.SiteIndex) (string, error) {
 	s := index.GetSite(siteName)
 	if s == nil {
 		return "", fmt.Errorf("no such site: %s", siteName)
@@ -38,6 +38,8 @@ func HandleUpload(siteName, via string, reader *multipart.Reader, index *index.S
 		os.Remove(uploadedZip.Name())
 	}()
 
+	var zipName string
+
 	for {
 		part, err := reader.NextPart()
 		if err == io.EOF {
@@ -46,6 +48,7 @@ func HandleUpload(siteName, via string, reader *multipart.Reader, index *index.S
 			return "", fmt.Errorf("failed to read multipart stream: %w", err)
 		}
 		if part.FormName() == "upload" {
+			zipName = part.FileName()
 			io.Copy(uploadedZip, part)
 		}
 	}
@@ -74,7 +77,7 @@ func HandleUpload(siteName, via string, reader *multipart.Reader, index *index.S
 		return "", fmt.Errorf("failed to hash directory: %w", err)
 	}
 
-	err = s.CreateNewVersion(versionHash, size, count, via)
+	err = s.CreateNewVersion(versionHash, "ZIPArchive", zipName, size, count, source, via)
 	if err != nil {
 		return "", fmt.Errorf("failed to create new version: %w", err)
 	}

@@ -46,6 +46,12 @@ func VersionPage(site *site.Site, versionMeta config.VersionMeta) Node {
 				Dt(Text("Hash")),
 				Dd(Text(versionMeta.Hash)),
 
+				Dt(Text("Upload kind")),
+				Dd(Text(versionMeta.Kind)),
+
+				Dt(Text("Original name")),
+				Dd(Text(versionMeta.Original)),
+
 				Dt(Text("Number of files")),
 				Dd(Text(strconv.Itoa(int(versionMeta.Files)))),
 
@@ -54,6 +60,9 @@ func VersionPage(site *site.Site, versionMeta config.VersionMeta) Node {
 
 				Dt(Text("Created at")),
 				Dd(Text(createDate.Format(time.UnixDate))),
+
+				Dt(Text("Source")),
+				Dd(Text(versionMeta.Source)),
 
 				Dt(Text("Via")),
 				Dd(Text(versionMeta.Via)),

@@ -206,7 +206,7 @@ func (s *Site) GetAllVersions() ([]config.VersionMeta, error) {
 	return sortedVersions, err
 }
 
-func (s *Site) CreateNewVersion(version string, size int64, filecount uint, via string) error {
+func (s *Site) CreateNewVersion(version string, kind string, original string, size int64, filecount uint, source string, via string) error {
 	t := time.Now()
 	newVersionDir := path.Join(s.Path, version)
 
@@ -220,7 +220,7 @@ func (s *Site) CreateNewVersion(version string, size int64, filecount uint, via 
 		return err
 	}
 
-	_, versionMeta := config.NewVersionMeta(t, version, size, filecount, via)
+	_, versionMeta := config.NewVersionMeta(t, version, kind, original, size, filecount, source, via)
 	err = os.WriteFile(path.Join(newVersionDir, "metadata"), []byte(versionMeta), 0o644)
 	if err != nil {
 		return err
