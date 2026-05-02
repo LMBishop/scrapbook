@@ -12,7 +12,7 @@ import (
 )
 
 func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
-	versions, metas, err := site.GetAllVersions()
+	versions, err := site.GetAllVersions()
 	currentVersion, _ := site.GetCurrentVersion()
 
 	return Page("Site "+site.Name,
@@ -61,20 +61,20 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 					),
 				},
 
-				Map(versions, func(version string) Node {
+				Map(versions, func(version config.VersionMeta) Node {
 					return Group{
 						Span(
 							Class("date"),
-							Span(Text(version[:8])),
+							Span(Text(version.Hash[:8])),
 						),
 						Span(
 							Class("date"),
-							Span(Text(time.Unix(int64(metas[version].Created), 0).Format(time.DateTime))),
+							Span(Text(time.Unix(int64(version.Created), 0).Format(time.DateTime))),
 						),
 						Span(
 							Class("actions"),
-							If(currentVersion == version, Span(Class("current"), Text("current"))),
-							NavButton("Details", fmt.Sprintf("version/%s/", version)),
+							If(currentVersion == version.Hash, Span(Class("current"), Text("current"))),
+							NavButton("Details", fmt.Sprintf("version/%s/", version.Hash)),
 						),
 					}
 				}),

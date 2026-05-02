@@ -90,6 +90,8 @@ func HandleUpload(siteName, via string, reader *multipart.Reader, index *index.S
 		return "", fmt.Errorf("failed to update version: %w", err)
 	}
 
+	s.ProcessRetention()
+
 	return versionHash, nil
 }
 

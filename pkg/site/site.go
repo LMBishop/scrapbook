@@ -122,11 +122,43 @@ func (s *Site) DeleteVersion(version string) error {
 	return os.RemoveAll(path.Join(s.Path, version))
 }
 
-func (s *Site) GetAllVersions() ([]string, map[string]config.VersionMeta, error) {
+func (s *Site) ProcessRetention() error {
+	if s.Config.Retention.Amount <= 0 {
+		return nil
+	}
+
+	versions, err := s.GetAllVersions()
+	if err != nil {
+		return err
+	}
+
+	current, err := s.GetCurrentVersion()
+	if err != nil {
+		return err
+	}
+
+	count := 0
+	for _, version := range versions {
+		count++
+		if count <= int(s.Config.Retention.Amount) {
+			continue
+		}
+
+		if current == version.Hash {
+			continue
+		}
+
+		s.DeleteVersion(version.Hash)
+	}
+
+	return nil
+}
+
+func (s *Site) GetAllVersions() ([]config.VersionMeta, error) {
 	entries, err := os.ReadDir(s.Path)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	var versions []string
@@ -138,7 +170,7 @@ func (s *Site) GetAllVersions() ([]string, map[string]config.VersionMeta, error)
 
 		match, err := regexp.MatchString(versionRegex, entry.Name())
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		if match {
@@ -167,11 +199,11 @@ func (s *Site) GetAllVersions() ([]string, map[string]config.VersionMeta, error)
 		sortedVersions = append(sortedVersions, v)
 	}
 	sort.Slice(sortedVersions, func(i, j int) bool {
-		return sortedVersions[i].Created < sortedVersions[j].Created
+		return sortedVersions[i].Created > sortedVersions[j].Created
 
 	})
 
-	return versions, versionMetdatas, err
+	return sortedVersions, err
 }
 
 func (s *Site) CreateNewVersion(version string, size int64, filecount uint, via string) error {
