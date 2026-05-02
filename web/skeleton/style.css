@@ -161,7 +161,7 @@ a.button:hover, button:hover, input[type=submit]:hover, button:active, a.button:
 }
 
 .versions-table {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .versions-table > .span {
@@ -174,10 +174,15 @@ a.button:hover, button:hover, input[type=submit]:hover, button:active, a.button:
     gap: 0.5rem;
 }
 
-.versions-table > .date > .current {
+.versions-table > .actions {
+    align-items: center;
+}
+
+.versions-table > .actions > .current {
     color: #0dbe22;
     font-size: smaller;
     font-style: italic;
+    margin: 0 0.5rem;
 }
 
 .alert {

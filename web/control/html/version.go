@@ -5,14 +5,16 @@ import (
 	"time"
 
 	"github.com/LMBishop/scrapbook/pkg/config"
+	"github.com/LMBishop/scrapbook/pkg/site"
 	. "github.com/LMBishop/scrapbook/web/skeleton"
 	"github.com/dustin/go-humanize"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
 
-func VersionPage(versionMeta config.VersionMeta) Node {
+func VersionPage(site *site.Site, versionMeta config.VersionMeta) Node {
 	createDate := time.Unix(int64(versionMeta.Created), 0)
+	currentVersion, _ := site.GetCurrentVersion()
 
 	return Page("Version "+versionMeta.Hash[0:8],
 		H1(Text("Version "+versionMeta.Hash[0:8])),
@@ -23,6 +25,17 @@ func VersionPage(versionMeta config.VersionMeta) Node {
 			Div(
 				Class("control-group"),
 
+				If(currentVersion != versionMeta.Hash,
+					Form(
+						Method("POST"),
+						Action("current"),
+
+						Input(
+							Type("submit"),
+							Value("Set as current version"),
+						),
+					),
+				),
 				NavButton("Download version", "#"),
 				NavButton("Delete version", "delete"),
 			),

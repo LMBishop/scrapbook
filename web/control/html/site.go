@@ -2,6 +2,7 @@ package html
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/site"
@@ -11,7 +12,7 @@ import (
 )
 
 func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
-	versions, err := site.GetAllVersions()
+	versions, metas, err := site.GetAllVersions()
 	currentVersion, _ := site.GetCurrentVersion()
 
 	return Page("Site "+site.Name,
@@ -51,6 +52,10 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 						Text("Version"),
 					),
 					Span(
+						Class("header date"),
+						Text("Date"),
+					),
+					Span(
 						Class("header actions"),
 						Text("Actions"),
 					),
@@ -61,11 +66,14 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 						Span(
 							Class("date"),
 							Span(Text(version[:8])),
-							If(currentVersion == version, Span(Class("current"), Text("current"))),
+						),
+						Span(
+							Class("date"),
+							Span(Text(time.Unix(int64(metas[version].Created), 0).Format(time.DateTime))),
 						),
 						Span(
 							Class("actions"),
-							If(currentVersion != version, NavButton("Set current", fmt.Sprintf("/site/%s/", site.Name))),
+							If(currentVersion == version, Span(Class("current"), Text("current"))),
 							NavButton("Details", fmt.Sprintf("version/%s/", version)),
 						),
 					}

@@ -29,6 +29,7 @@ func NewMux(cfg *config.MainConfig, siteIndex *index.SiteIndex, authenticator *a
 	mux.HandleFunc("POST /site/{site}/delete", m.MustAuthenticate(authenticator, m.WithSite(siteIndex, h.PostDelete(cfg, siteIndex))))
 
 	mux.HandleFunc("GET /site/{site}/version/{version}/", m.MustAuthenticate(authenticator, m.WithSite(siteIndex, m.WithVersion(h.GetVersion(siteIndex)))))
+	mux.HandleFunc("POST /site/{site}/version/{version}/current", m.MustAuthenticate(authenticator, m.WithSite(siteIndex, m.WithVersion(h.PostVersionCurrent(cfg, siteIndex)))))
 	mux.HandleFunc("GET /site/{site}/version/{version}/delete", m.MustAuthenticate(authenticator, m.WithSite(siteIndex, m.WithVersion(h.GetVersionDelete(siteIndex)))))
 	mux.HandleFunc("POST /site/{site}/version/{version}/delete", m.MustAuthenticate(authenticator, m.WithSite(siteIndex, m.WithVersion(h.PostVersionDelete(cfg, siteIndex)))))
 

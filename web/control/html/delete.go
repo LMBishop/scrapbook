@@ -47,7 +47,7 @@ func DeletePage(success, err, what string) Node {
 
 				Div(
 					Class("control-group group-gap"),
-					NavButton("Go back", ".."),
+					NavButton("Go back", "."),
 					Input(
 						Type("submit"),
 						Value("Submit"),

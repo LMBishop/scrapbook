@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/LMBishop/scrapbook/pkg/config"
@@ -11,11 +12,13 @@ import (
 	ghttp "maragu.dev/gomponents/http"
 )
 
-func GetVersion(index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
+func PostVersionCurrent(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
 	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 		site := r.Context().Value("site").(*site.Site)
-		versionMetadata := r.Context().Value("versionMetadata").(config.VersionMeta)
+		version := r.Context().Value("versionMetadata").(config.VersionMeta)
 
-		return html.VersionPage(site, versionMetadata), nil
+		site.UpdateVersion(version.Hash)
+
+		return html.SuccessPage(fmt.Sprintf("Set site %s version to %s", site.Name, version.Hash), "."), nil
 	})
 }

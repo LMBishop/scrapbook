@@ -9,7 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -89,6 +89,10 @@ func (s *Site) ReadVersionMetadata(version string) (string, error) {
 }
 
 func (s *Site) UpdateVersion(newVersion string) error {
+	if newVersion == "" {
+		return fmt.Errorf("not setting empty version")
+	}
+
 	newVersionPath := path.Join(s.Path, newVersion)
 
 	stat, err := os.Stat(newVersionPath)
@@ -118,11 +122,11 @@ func (s *Site) DeleteVersion(version string) error {
 	return os.RemoveAll(path.Join(s.Path, version))
 }
 
-func (s *Site) GetAllVersions() ([]string, error) {
+func (s *Site) GetAllVersions() ([]string, map[string]config.VersionMeta, error) {
 	entries, err := os.ReadDir(s.Path)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var versions []string
@@ -134,7 +138,7 @@ func (s *Site) GetAllVersions() ([]string, error) {
 
 		match, err := regexp.MatchString(versionRegex, entry.Name())
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		if match {
@@ -142,10 +146,32 @@ func (s *Site) GetAllVersions() ([]string, error) {
 		}
 	}
 
-	slices.Sort(versions)
-	slices.Reverse(versions)
+	versionMetdatas := make(map[string]config.VersionMeta)
 
-	return versions, err
+	for _, version := range versions {
+		metadataStr, err := s.ReadVersionMetadata(version)
+		if err != nil {
+			continue
+		}
+
+		metadata, err := config.VersionMetaFromString(metadataStr)
+		if err != nil {
+			continue
+		}
+
+		versionMetdatas[version] = metadata
+	}
+
+	sortedVersions := make([]config.VersionMeta, 0, len(versionMetdatas))
+	for _, v := range versionMetdatas {
+		sortedVersions = append(sortedVersions, v)
+	}
+	sort.Slice(sortedVersions, func(i, j int) bool {
+		return sortedVersions[i].Created < sortedVersions[j].Created
+
+	})
+
+	return versions, versionMetdatas, err
 }
 
 func (s *Site) CreateNewVersion(version string, size int64, filecount uint, via string) error {
