@@ -6,6 +6,7 @@ import (
 
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/index"
+	"github.com/LMBishop/scrapbook/pkg/site"
 	"github.com/LMBishop/scrapbook/web/control/html"
 	. "maragu.dev/gomponents"
 	ghttp "maragu.dev/gomponents/http"
@@ -13,33 +14,18 @@ import (
 
 func GetFlags(index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
 	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
-		siteName := r.PathValue("site")
-		if siteName == "" {
-			return html.ErrorPage("Unknown site: " + siteName), nil
-		}
-		site := index.GetSite(siteName)
-		if site == nil {
-			return html.ErrorPage("Unknown site: " + siteName), nil
-		}
-
-		return html.FlagsPage("", "", siteName, site.Flags), nil
+		site := r.Context().Value("site").(*site.Site)
+		return html.FlagsPage("", "", site.Name, site.Flags), nil
 	})
 }
 
 func PostFlags(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
 	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
-		siteName := r.PathValue("site")
-		if siteName == "" {
-			return html.ErrorPage("Unknown site: " + siteName), nil
-		}
-		site := index.GetSite(siteName)
-		if site == nil {
-			return html.ErrorPage("Unknown site: " + siteName), nil
-		}
+		site := r.Context().Value("site").(*site.Site)
 
 		err := r.ParseForm()
 		if err != nil {
-			return html.FlagsPage("", fmt.Errorf("Could not parse form: %w", err).Error(), siteName, site.Flags), nil
+			return html.FlagsPage("", fmt.Errorf("Could not parse form: %w", err).Error(), site.Name, site.Flags), nil
 		}
 
 		var flags config.SiteFlag
@@ -62,11 +48,11 @@ func PostFlags(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.
 		site.Flags = flags
 		err = site.WriteSiteFlags(flags)
 		if err != nil {
-			return html.FlagsPage("", fmt.Errorf("Failed to persist flags: %w", err).Error(), siteName, flags), nil
+			return html.FlagsPage("", fmt.Errorf("Failed to persist flags: %w", err).Error(), site.Name, flags), nil
 		}
 
 		site.Initialise()
 
-		return html.FlagsPage(fmt.Sprintf("Successfully set flags %s", site.ConvertFlagsToString()), "", siteName, flags), nil
+		return html.FlagsPage(fmt.Sprintf("Successfully set flags %s", site.ConvertFlagsToString()), "", site.Name, flags), nil
 	})
 }

@@ -8,15 +8,15 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func DeletePage(success, err string, siteName string) Node {
-	return Page("Delete "+siteName,
-		H1(Text("Delete "+siteName)),
+func DeletePage(success, err, what string) Node {
+	return Page("Delete "+what,
+		H1(Text("Delete "+what)),
 
 		If(success != "", Group{
 			AlertSuccess(success),
 			Div(
 				Class("control-group group-right"),
-				NavButton("OK", "/"),
+				NavButton("OK", "../.."),
 			),
 		}),
 
@@ -36,18 +36,18 @@ func DeletePage(success, err string, siteName string) Node {
 						),
 						Label(
 							For("delete"),
-							Text(fmt.Sprintf("Really delete site %s?", siteName)),
+							Text(fmt.Sprintf("Really delete %s?", what)),
 						),
 					),
 					Span(
 						Class("form-help"),
-						Text("Check the box to confirm deletion. Data on disk (including all site versions) will be deleted. This action is irreversible."),
+						Text("Check the box to confirm deletion. All data on disk will be deleted. This action is irreversible."),
 					),
 				),
 
 				Div(
-					Class("control-group group-right"),
-					NavButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
+					Class("control-group group-gap"),
+					NavButton("Go back", ".."),
 					Input(
 						Type("submit"),
 						Value("Submit"),

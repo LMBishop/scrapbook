@@ -119,7 +119,7 @@ func FlagsPage(success, err string, siteName string, flags config.SiteFlag) Node
 				),
 
 				Div(
-					Class("control-group group-right"),
+					Class("control-group group-gap"),
 					NavButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
 					Input(
 						Type("submit"),

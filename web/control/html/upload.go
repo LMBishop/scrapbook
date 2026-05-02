@@ -41,7 +41,7 @@ func UploadPage(success, err string, siteName string) Node {
 				),
 
 				Div(
-					Class("control-group group-right"),
+					Class("control-group group-gap"),
 					NavButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
 					Input(
 						Type("submit"),

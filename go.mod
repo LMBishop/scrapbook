@@ -1,6 +1,6 @@
 module github.com/LMBishop/scrapbook
 
-go 1.24.3
+go 1.25.0
 
 require (
 	codeberg.org/emersion/go-scfg v0.1.0 // indirect
@@ -14,6 +14,7 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/mod v0.35.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect

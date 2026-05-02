@@ -39,7 +39,7 @@ fieldset {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 1rem;;
+    margin-bottom: 1rem;
 }
 
 legend {
@@ -74,6 +74,10 @@ button, input[type=submit] {
     cursor: pointer;
 }
 
+dt {
+    font-weight: bold;
+}
+
 a.button:hover, button:hover, input[type=submit]:hover, button:active, a.button:active, input[type=submit]:active {
     background: #000!important;
     color: #fff!important;
@@ -96,6 +100,10 @@ a.button:hover, button:hover, input[type=submit]:hover, button:active, a.button:
 
 .control-group.group-right {
     justify-content: flex-end;
+}
+
+.control-group.group-gap {
+    justify-content: space-between;
 }
 
 .control-group a.button, .control-group button, .control-group input[type=submit] {
@@ -196,4 +204,8 @@ a.button:hover, button:hover, input[type=submit]:hover, button:active, a.button:
 
 .text-bad {
     color: #c02020;
+}
+
+.margin-bottom {
+    margin-bottom: 1rem;
 }

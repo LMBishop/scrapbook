@@ -48,7 +48,7 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 				Group{
 					Span(
 						Class("header date"),
-						Text("Date"),
+						Text("Version"),
 					),
 					Span(
 						Class("header actions"),
@@ -60,7 +60,7 @@ func SitePage(mainConfig *config.MainConfig, site *site.Site) Node {
 					return Group{
 						Span(
 							Class("date"),
-							Span(Text(version)),
+							Span(Text(version[:8])),
 							If(currentVersion == version, Span(Class("current"), Text("current"))),
 						),
 						Span(

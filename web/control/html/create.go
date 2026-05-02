@@ -62,7 +62,7 @@ func CreatePage(success, err string, formValues CreatePageForm) Node {
 				),
 
 				Div(
-					Class("control-group group-right"),
+					Class("control-group group-gap"),
 					NavButton("Go back", "/"),
 					Input(
 						Type("submit"),

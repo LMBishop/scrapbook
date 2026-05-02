@@ -17,8 +17,7 @@ import (
 	"github.com/LMBishop/scrapbook/pkg/config"
 )
 
-const versionRegex = "[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}_[0-9]{2}"
-const timeFormat = "2006_01_02_15_04_05"
+const versionRegex = "[0-9a-f]{64}"
 
 type Site struct {
 	Name   string
@@ -63,7 +62,7 @@ func CreateNewSite(name string, baseDir string, host string) (*Site, error) {
 func (s *Site) Initialise() {
 	s.handler = nil
 	if s.Config != nil {
-		s.handler = NewSiteFileServer(http.Dir(path.Join(s.Path, "default")), slog.With("site", s.Name), s.Flags, *s.Config)
+		s.handler = NewSiteFileServer(http.Dir(path.Join(s.GetCurrentPath(), "webroot")), slog.With("site", s.Name), s.Flags, *s.Config)
 	}
 }
 
@@ -72,16 +71,21 @@ func (s *Site) Handler() http.Handler {
 }
 
 func (s *Site) GetCurrentPath() string {
-	return path.Join(s.Path, "default")
+	return path.Join(s.Path, "current")
 }
 
 func (s *Site) GetCurrentVersion() (string, error) {
-	dir, err := filepath.EvalSymlinks(path.Join(s.Path, "default"))
+	dir, err := filepath.EvalSymlinks(path.Join(s.Path, "current"))
 	if err != nil {
 		return "", err
 	}
 
 	return filepath.Base(dir), nil
+}
+
+func (s *Site) ReadVersionMetadata(version string) (string, error) {
+	config, err := os.ReadFile(path.Join(s.Path, version, "metadata"))
+	return string(config), err
 }
 
 func (s *Site) UpdateVersion(newVersion string) error {
@@ -104,6 +108,14 @@ func (s *Site) UpdateVersion(newVersion string) error {
 
 func (s *Site) DeleteDataOnDisk() error {
 	return os.RemoveAll(s.Path)
+}
+
+func (s *Site) DeleteVersion(version string) error {
+	if version == "" {
+		return fmt.Errorf("not removing empty version")
+	}
+
+	return os.RemoveAll(path.Join(s.Path, version))
 }
 
 func (s *Site) GetAllVersions() ([]string, error) {
@@ -136,17 +148,27 @@ func (s *Site) GetAllVersions() ([]string, error) {
 	return versions, err
 }
 
-func (s *Site) CreateNewVersion() (string, error) {
+func (s *Site) CreateNewVersion(version string, size int64, filecount uint, via string) error {
 	t := time.Now()
-	dirName := t.Format("2006_01_02_15_04_05")
-	newVersionDir := path.Join(s.Path, dirName)
+	newVersionDir := path.Join(s.Path, version)
 
-	err := os.MkdirAll(newVersionDir, os.FileMode(0o755))
-	if err != nil {
-		return "", err
+	_, err := os.Stat(newVersionDir)
+	if err == nil {
+		return errors.New("version already exists")
 	}
 
-	return dirName, nil
+	err = os.MkdirAll(newVersionDir, os.FileMode(0o755))
+	if err != nil {
+		return err
+	}
+
+	_, versionMeta := config.NewVersionMeta(t, version, size, filecount, via)
+	err = os.WriteFile(path.Join(newVersionDir, "metadata"), []byte(versionMeta), 0o644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Site) EvaluateSiteStatus() (string, string) {

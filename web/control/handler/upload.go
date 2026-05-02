@@ -6,6 +6,7 @@ import (
 
 	"github.com/LMBishop/scrapbook/pkg/config"
 	"github.com/LMBishop/scrapbook/pkg/index"
+	"github.com/LMBishop/scrapbook/pkg/site"
 	"github.com/LMBishop/scrapbook/pkg/upload"
 	"github.com/LMBishop/scrapbook/web/control/html"
 	. "maragu.dev/gomponents"
@@ -14,36 +15,25 @@ import (
 
 func GetUpload(index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
 	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
-		siteName := r.PathValue("site")
-		if siteName == "" {
-			return html.ErrorPage("Unknown site: " + siteName), nil
-		}
-		site := index.GetSite(siteName)
-		if site == nil {
-			return html.ErrorPage("Unknown site: " + siteName), nil
-		}
-
-		return html.UploadPage("", "", siteName), nil
+		site := r.Context().Value("site").(*site.Site)
+		return html.UploadPage("", "", site.Name), nil
 	})
 }
 
 func PostUpload(mainConfig *config.MainConfig, index *index.SiteIndex) func(http.ResponseWriter, *http.Request) {
 	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
-		siteName := r.PathValue("site")
-		if siteName == "" {
-			return html.ErrorPage("Unknown site: " + siteName), nil
-		}
+		site := r.Context().Value("site").(*site.Site)
 
 		reader, err := r.MultipartReader()
 		if err != nil {
-			return html.UploadPage("", fmt.Errorf("Unexpected error: could not read stream: %w", err).Error(), siteName), nil
+			return html.UploadPage("", fmt.Errorf("Unexpected error: could not read stream: %w", err).Error(), site.Name), nil
 		}
 
-		version, err := upload.HandleUpload(siteName, reader, index)
+		version, err := upload.HandleUpload(site.Name, "WebUI", reader, index)
 		if err != nil {
-			return html.UploadPage("", fmt.Errorf("Unexpected error: %w", err).Error(), siteName), nil
+			return html.UploadPage("", fmt.Errorf("Unexpected error: %w", err).Error(), site.Name), nil
 		}
 
-		return html.UploadPage(fmt.Sprintf("Version %s created successfully", version), "", siteName), nil
+		return html.UploadPage(fmt.Sprintf("Version %s created successfully", version), "", site.Name), nil
 	})
 }

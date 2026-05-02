@@ -31,7 +31,7 @@ func UploadSiteVersion(mainConfig *config.MainConfig, index *index.SiteIndex) fu
 			return
 		}
 
-		version, err := upload.HandleUpload(site, reader, index)
+		version, err := upload.HandleUpload(site, "API", reader, index)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, err.Error())

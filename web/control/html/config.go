@@ -43,7 +43,7 @@ func ConfigPage(success, err, siteName, configValue string) Node {
 				),
 
 				Div(
-					Class("control-group group-right"),
+					Class("control-group group-gap margin-bottom"),
 					NavButton("Go back", fmt.Sprintf("/site/%s/", siteName)),
 					Input(
 						Type("submit"),
