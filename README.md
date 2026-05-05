@@ -54,7 +54,7 @@ management interface.
 
 ## Screenshots
 
-![index page](/img/scrapbook_index.png)
-![site overview](/img/scrapbook_site.png)
-![site flags](/img/scrapbook_flags.png)
-![version details](/img/scrapbook_versions.png)
+![index page](img/scrapbook_index.png)
+![site overview](img/scrapbook_site.png)
+![site flags](img/scrapbook_flags.png)
+![version details](img/scrapbook_versions.png)
