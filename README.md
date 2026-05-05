@@ -51,3 +51,10 @@ wildcard certificate for the (sub-)domain you want to serve scrapbook sites with
 Couple this with a wildcard CNAME pointing to your webserver, and you can very
 easily set up a new sites on different subdomains all within the scrapbook web
 management interface.
+
+## Screenshots
+
+![index page](/img/scrapbook_index.png)
+![site overview](/img/scrapbook_site.png)
+![site flags](/img/scrapbook_flags.png)
+![version details](/img/scrapbook_versions.png)
