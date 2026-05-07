@@ -1,0 +1,16 @@
+services:
+  scrapbook:
+    image: scrapbook:latest
+    container_name: scrapbook
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    volumes:
+      - scrapbook_data:/var/lib/scrapbook
+      - scrapbook_config:/etc/scrapbook
+
+volumes:
+  scrapbook_data:
+  scrapbook_config:

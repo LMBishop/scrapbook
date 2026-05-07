@@ -1,18 +1,19 @@
 # scrapbook
 
 Scrapbook is a website manager, built to deploy and serve statically generated
-web pages. It is designed to be as easy to use as possible, with a web interface
-for management and API for programmatic site deployment. It also does not need a
-database and uses the file system for organisation, to allow easy interoperability
-if you wish to serve sites using another web server.
+web pages. It's designed with the following goals:
+
+* Individual sites per `Host` header
+* Web management interface to create and deploy sites
+* API for publishing new versions of sites (e.g. CI jobs)
+* No database or Redis requirement
 
 It was originally built for me to use in conjunction with my own
-[static site generator](https://git.leonardobishop.net/panulat) in a CI job.
+[static site generator](https://git.leonardobishop.net/panulat).
 
 ## Installation
 
-This program is designed to work on any Linux machine. Install to `/usr/local/bin`
-with:
+This program is designed for Linux only. Install to `/usr/local/bin` with:
 
 ```bash
 make
@@ -21,6 +22,20 @@ make install
 
 There is a sample configuration file and service file in `contrib`. By default,
 scrapbook will look for its configuration at `/etc/scrapbook/config`.
+
+Alternatively, there is a provided `Dockerfile` if you wish to use a container.
+
+```bash
+docker build -t scrapbook .
+docker run \
+      -p "8080:80" \
+      -v scrapbook_config:/etc/scrapbook  \
+      -v scrapbook_data:/var/lib/scrapbook  \
+      scrapbook
+```
+
+There are sample Docker Compose and Podman Quadlet files in `contrib`, along with
+a sample configuration file.
 
 ## Configuration
 

@@ -1,0 +1,6 @@
+/config.toml
+scrapbook
+runlocal
+*.tgz
+description-pak
+*.deb

@@ -1,0 +1,19 @@
+[Unit]
+Description=scrapbook server
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=scrapbook:latest
+PublishPort=8080:80
+
+Volume=scrapbook_data:/var/lib/scrapbook
+Volume=scrapbook_config:/etc/scrapbook
+
+NoNewPrivileges=true
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

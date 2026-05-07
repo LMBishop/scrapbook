@@ -1,12 +1,11 @@
 BINARY_NAME=scrapbook
 SYS_CONF_DIR=/etc/scrapbook
 SYS_DATA_DIR=/var/lib/scrapbook
-SYSTEMD_DIR=/etc/systemd/system
 
 all: build
 
 build:
-	go build -ldflags "-X 'github.com/LMBishop/scrapbook/pkg/constants.SysConfDir=${SYS_CONF_DIR}' -X 'github.com/LMBishop/scrapbook/pkg/constants.SysDataDir=${SYS_DATA_DIR}'" -o ${BINARY_NAME} main.go
+	CGO_ENABLED=0 GOOS=linux go build -ldflags "-X 'github.com/LMBishop/scrapbook/pkg/constants.SysConfDir=${SYS_CONF_DIR}' -X 'github.com/LMBishop/scrapbook/pkg/constants.SysDataDir=${SYS_DATA_DIR}'" -o ${BINARY_NAME} main.go
 
 .PHONY: runlocal
 runlocal:
